@@ -11,21 +11,29 @@ function seq(a) {
   return r;
 } 
 
-function handleLayers(layers) {
+function handleArtLayers(layers) {
   seq(layers).each(function(layer) {
     if (!layer.visible) {
       layer.remove();
+      return;
     }
+    if (layer.isBackgroundLayer)
+      return;
+    set = doc.layerSets.add();
+    set.name = layer.name;
+    set.move(layer, ElementPlacement.PLACEBEFORE);
+    layer.move(set, ElementPlacement.INSIDE);
+    set.merge(); 
   });
 }
 
-function handleLayerSets(layerSets) {
-  seq(layerSets).each(function(set) {
+function handleLayerSets(sets) {
+  seq(sets).each(function(set) {
     if (!set.visible) {
       set.remove();
       return;
     }
-    handleLayers(set.layers);
+    handleArtLayers(set.artLayers);
     if (set.layerSets.length > 0) {
       handleLayerSets(set.layerSets);
       return;
@@ -35,7 +43,7 @@ function handleLayerSets(layerSets) {
 }
 
 function exec() {
-  handleLayers(doc.layers);
+  handleArtLayers(doc.artLayers);
   handleLayerSets(doc.layerSets);
 }
 
