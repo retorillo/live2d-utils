@@ -29,7 +29,7 @@ function handleArtLayers(layers) {
 
 function handleLayerSets(sets) {
   seq(sets).each(function(set) {
-    if (!set.visible) {
+    if (!set.visible || !(set.artLayers.length + set.layerSets.length))  {
       set.remove();
       return;
     }
@@ -46,5 +46,3 @@ function exec() {
   handleArtLayers(doc.artLayers);
   handleLayerSets(doc.layerSets);
 }
-
-
