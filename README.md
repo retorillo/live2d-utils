@@ -2,11 +2,25 @@
 
 **WORKING IN PROGRESS**
 
-The [original preprocess script](http://sites.cybernoids.jp/cubism2/tools/jsx) is classic and too strict.
+The [original preprocess script](http://sites.cybernoids.jp/cubism2/tools/jsx) is classic, and has not been updated over 5 years.
 
-In common, modern Cubism can loads PSD files that contains nested folders, smart objects, transparent layers, and so forth.
+This project goal is to discover minimal and more helpful preprocess script.
 
-This project goal is to discover minimal preprocess script.
+## Extentions
+
+### Forcing merge
+
+Layer sets that name starting with `@` will be forcely merged no matter whether it has decendant sets.
+
+### Auto renamer
+
+Layer set that name ending with `-*` will be applied auto renamer procedure to its decendants.
+
+```
+wear-*
+  |---top     => wear-top
+  `---bottom  => wear-bottom
+```
 
 ## Reference
 
