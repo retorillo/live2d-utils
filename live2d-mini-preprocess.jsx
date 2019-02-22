@@ -1,4 +1,5 @@
 var doc = app.activeDocument;
+doc = doc.duplicate();
 doc.suspendHistory('Live2D Mini Preprocess', 'exec()');
 
 function buildName(name, prefix) {
@@ -24,6 +25,23 @@ function seq(a) {
   return r;
 } 
 
+function suppressMaskAppearance(layer) {
+  r = { hasLayerMask: false, hasVectorMask: false };
+  try {
+    layer.layerMaskDensity = 0;
+    r.hasLayerMask = true;
+  }
+  catch (e) {
+  }
+  try {
+    layer.vectorMaskDensity = 0;
+    r.hasVectorMask = true;
+  }
+  catch (e) {
+  }
+  return r;
+}
+
 function handleArtLayers(layers, prefix) {
   // NOTE: grouped = clipping masked
   groupedLayers = seq([]);
@@ -37,6 +55,11 @@ function handleArtLayers(layers, prefix) {
     if (layer.grouped) {
       groupedLayers.push(layer);
       return
+    }
+    suppresser = /^\!(.*)$/.exec(layer.name);
+    if (suppresser) {
+      suppressMaskAppearance(layer);
+      layer.name = suppresser[1].replace(/^\s+|\s+$/g, '');
     }
     set = doc.layerSets.add();
     set.name = layer.name;
@@ -73,7 +96,10 @@ function handleLayerSets(sets, prefix) {
       return;
     }
     set.name = buildName(set.name, prefix);
-    set.merge();
+    layer = set.merge();
+    // NOTE: Set may have layer/vector mask no matter the merge()
+    // In addition, this call allows to ignore mask-suppressor in this function.
+    handleArtLayers([layer]);
   });
 }
 
