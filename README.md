@@ -8,19 +8,19 @@ This project goal is to discover minimal and more helpful preprocess script.
 
 ## Extentions
 
-### Suppressing layer/vector masks (!)
+### Suppressing layer/vector masks `!`
 
-If layer or layer sets that name starting with `!`, its layer/vector mask will be purged.
+If name of layer or layer sets starting with `!`, its layer/vector mask will be purged before merging.
 
-### Forcely removing (#)
+### Forcely removing `#`
 
-Layer or layer sets that name starting with `#` will be forcely removed no matter its visiblity.
+Layer or layer sets that name starting with `#` will be forcely removed regardless of its visiblity.
 
-### Forcely merging (@)
+### Forcely merging `@`
 
 Layer sets that name starting with `@` will be forcely merged no matter whether it has decendant sets.
 
-### Auto prefixing
+### Auto prefixing `-*`
 
 Layer set that name ending with `-*` will be applied auto prefixing procedure to its decendants.
 
