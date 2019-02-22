@@ -1,9 +1,12 @@
 var doc = app.activeDocument;
 doc.suspendHistory('Live2D Mini Preprocess', 'exec()');
 
-function safeName(name) {
+function buildName(name, prefix) {
+  builder = [];
+  if (prefix && prefix.length > 0) builder.push(prefix);
   // NOTE: Cubism may fail to load if layer has contains dot
-  return name.replace(/\./g, '-');
+  builder.push(name.replace(/\./g, '-').replace(/(^\s+)|(\s+$)/g, ''));
+  return builder.join('-');
 }
 
 function seq(a) {
@@ -21,7 +24,7 @@ function seq(a) {
   return r;
 } 
 
-function handleArtLayers(layers) {
+function handleArtLayers(layers, prefix) {
   // NOTE: grouped = clipping masked
   groupedLayers = seq([]);
   seq(layers).each(function(layer) {
@@ -39,7 +42,6 @@ function handleArtLayers(layers) {
     set.name = layer.name;
     set.move(layer, ElementPlacement.PLACEBEFORE);
     layer.move(set, ElementPlacement.INSIDE);
-
     placeTarget = layer;
     groupedLayers.reversed_each(function(l) {
       l.move(placeTarget, ElementPlacement.PLACEBEFORE);
@@ -47,23 +49,30 @@ function handleArtLayers(layers) {
       placeTarget = l;
     });
     groupedLayers = seq([]);
-    layer.name = safeName(layer.name);
+    layer.name = buildName(layer.name, prefix);
     set.merge(); 
   });
 }
 
-function handleLayerSets(sets) {
+function handleLayerSets(sets, prefix) {
   seq(sets).each(function(set) {
     if (!set.visible || !(set.artLayers.length + set.layerSets.length))  {
       set.remove();
       return;
     }
-    handleArtLayers(set.artLayers);
-    if (set.layerSets.length > 0) {
-      handleLayerSets(set.layerSets);
+    renamer = /^(.+?)(-\*)$/.exec(set.name);
+    if (renamer) set.name = renamer[1]; 
+    if (/^@/.exec(set.name)) {
+      set.name = buildName(set.name.substr(1), prefix);
+      set.merge();
       return;
     }
-    set.name = safeName(set.name);
+    handleArtLayers(set.artLayers, renamer ? buildName(renamer[1], prefix) : prefix);
+    if (set.layerSets.length > 0) {
+      handleLayerSets(set.layerSets, renamer ? buildName(renamer[1], prefix) : prefix);
+      return;
+    }
+    set.name = buildName(set.name, prefix);
     set.merge();
   });
 }
