@@ -25,7 +25,6 @@ function handleArtLayers(layers) {
   // NOTE: grouped = clipping masked
   groupedLayers = seq([]);
   seq(layers).each(function(layer) {
-    layer.name = safeName(layer.name);
     if (!layer.visible) {
       layer.remove();
       return;
@@ -48,13 +47,13 @@ function handleArtLayers(layers) {
       placeTarget = l;
     });
     groupedLayers = seq([]);
+    layer.name = safeName(layer.name);
     set.merge(); 
   });
 }
 
 function handleLayerSets(sets) {
   seq(sets).each(function(set) {
-    set.name = safeName(set.name);
     if (!set.visible || !(set.artLayers.length + set.layerSets.length))  {
       set.remove();
       return;
@@ -64,6 +63,7 @@ function handleLayerSets(sets) {
       handleLayerSets(set.layerSets);
       return;
     }
+    set.name = safeName(set.name);
     set.merge();
   });
 }
