@@ -28,7 +28,7 @@ function handleArtLayers(layers, prefix) {
   // NOTE: grouped = clipping masked
   groupedLayers = seq([]);
   seq(layers).each(function(layer) {
-    if (!layer.visible) {
+    if (!layer.visible || /^#/.test(layer.name)) {
       layer.remove();
       return;
     }
@@ -56,20 +56,20 @@ function handleArtLayers(layers, prefix) {
 
 function handleLayerSets(sets, prefix) {
   seq(sets).each(function(set) {
-    if (!set.visible || !(set.artLayers.length + set.layerSets.length))  {
+    if (!set.visible || /^#/.test(set.name) || !(set.artLayers.length + set.layerSets.length))  {
       set.remove();
       return;
     }
-    renamer = /^(.+?)(-\*)$/.exec(set.name);
-    if (renamer) set.name = renamer[1]; 
+    prefixer = /^(.+?)(-\*)$/.exec(set.name);
+    if (prefixer) set.name = prefixer[1]; 
     if (/^@/.exec(set.name)) {
       set.name = buildName(set.name.substr(1), prefix);
       set.merge();
       return;
     }
-    handleArtLayers(set.artLayers, renamer ? buildName(renamer[1], prefix) : prefix);
+    handleArtLayers(set.artLayers, prefixer ? buildName(prefixer[1], prefix) : prefix);
     if (set.layerSets.length > 0) {
-      handleLayerSets(set.layerSets, renamer ? buildName(renamer[1], prefix) : prefix);
+      handleLayerSets(set.layerSets, prefixer ? buildName(prefixer[1], prefix) : prefix);
       return;
     }
     set.name = buildName(set.name, prefix);

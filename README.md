@@ -8,18 +8,27 @@ This project goal is to discover minimal and more helpful preprocess script.
 
 ## Extentions
 
+### Forcing remove
+
+Layer or layer sets that name starting with `#` will be forcely removed no matter its visiblity.
+
 ### Forcing merge
 
 Layer sets that name starting with `@` will be forcely merged no matter whether it has decendant sets.
 
-### Auto renamer
+### Auto prefixer
 
-Layer set that name ending with `-*` will be applied auto renamer procedure to its decendants.
+Layer set that name ending with `-*` will be applied auto prefixing procedure to its decendants.
 
 ```
-wear-*
-  |---top     => wear-top
-  `---bottom  => wear-bottom
+foo-*
+  |---bar          => foo-bar
+  |---baz          => foo-baz
+  |---qux          => foo-qux
+  |    `--- quux   => foo-quux
+  `---corge-*      => foo-corge
+       `--- grault => foo-corge-grault
+
 ```
 
 ## Reference
