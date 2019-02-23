@@ -14,6 +14,11 @@ function seq(a) {
   var r = [];
   for (var c = 0; c < a.length; c++)
     r.push(a[c]);
+  r.map = function(m) {
+    mapped = [];
+    this.each(function(i) { mapped.push(m(i)); });
+    return mapped;
+  };
   r.each = function(m) {
     for (var c = 0; c < this.length; c++)
       m(this[c]); 
@@ -65,7 +70,7 @@ function splitLayerToLR(layer) {
 function handleArtLayers(layers, prefix) {
   // NOTE: grouped = clipping masked
   groupedLayers = seq([]);
-  seq(layers).each(function(layer) {
+  return seq(layers).each(function(layer) {
     if (!layer.visible || /^#/.test(layer.name)) {
       layer.remove();
       return;
@@ -74,7 +79,7 @@ function handleArtLayers(layers, prefix) {
       return;
     if (layer.grouped) {
       groupedLayers.push(layer);
-      return
+      return;
     }
     suppresser = /^\(:?)!(.*)$/.exec(layer.name);
     if (suppresser) {
@@ -96,7 +101,7 @@ function handleArtLayers(layers, prefix) {
       placeTarget = l;
     });
     groupedLayers = seq([]);
-    layer.name = buildName(layer.name, prefix);
+    set.name = buildName(layer.name, prefix);
     merged = set.merge(); 
     if (splitter)
       splitLayerToLR(merged);
@@ -121,11 +126,8 @@ function handleLayerSets(sets, prefix) {
       handleLayerSets(set.layerSets, prefixer ? buildName(prefixer[1], prefix) : prefix);
       return;
     }
-    set.name = buildName(set.name, prefix);
     layer = set.merge();
-    // NOTE: Set may have layer/vector mask no matter the merge()
-    // In addition, this call allows to ignore mask-suppressor in this function.
-    handleArtLayers([layer]);
+    handleArtLayers([layer], prefix)
   });
 }
 
