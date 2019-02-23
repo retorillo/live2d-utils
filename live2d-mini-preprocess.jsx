@@ -42,6 +42,26 @@ function suppressMaskAppearance(layer) {
   return r;
 }
 
+function splitLayerToLR(layer) {
+  c = doc.width / 2;
+  h = doc.height;
+  w = doc.width;
+  leftRegion = [[0, 0], [c, 0], [c, h], [0, h], [0, 0]];
+  rightRegion = [[c, 0], [w, 0], [w, h], [c, h], [c, 0]];
+  leftLayer = layer;
+  rightLayer = layer.duplicate();
+  rightLayer.move(layer, ElementPlacement.PLACEAFTER);
+  rightLayer.name = leftLayer.name + '-r'; 
+  leftLayer.name += '-l';
+  doc.activeLayer = leftLayer;
+  doc.selection.select(rightRegion);
+  doc.selection.clear();
+  doc.activeLayer = rightLayer;
+  doc.selection.select(leftRegion);
+  doc.selection.clear();
+  doc.selection.deselect();
+}
+
 function handleArtLayers(layers, prefix) {
   // NOTE: grouped = clipping masked
   groupedLayers = seq([]);
@@ -56,10 +76,14 @@ function handleArtLayers(layers, prefix) {
       groupedLayers.push(layer);
       return
     }
-    suppresser = /^\!(.*)$/.exec(layer.name);
+    suppresser = /^\(:?)!(.*)$/.exec(layer.name);
     if (suppresser) {
       suppressMaskAppearance(layer);
-      layer.name = suppresser[1].replace(/^\s+|\s+$/g, '');
+      layer.name = suppresser[1] + suppresser[2].replace(/^\s+|\s+$/g, '');
+    }
+    splitter = /^\:(.*)$/.exec(layer.name);
+    if (splitter) {
+      layer.name = splitter[1].replace(/^\s+|\s+$/g, '');
     }
     set = doc.layerSets.add();
     set.name = layer.name;
@@ -73,7 +97,9 @@ function handleArtLayers(layers, prefix) {
     });
     groupedLayers = seq([]);
     layer.name = buildName(layer.name, prefix);
-    set.merge(); 
+    merged = set.merge(); 
+    if (splitter)
+      splitLayerToLR(merged);
   });
 }
 

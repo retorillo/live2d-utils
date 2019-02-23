@@ -8,6 +8,12 @@ This project goal is to discover minimal and more helpful preprocess script.
 
 ## Extentions
 
+### Auto splitting to LR
+
+If name of layer or layer set starting with `:`, it will be split to left and right layers. (eg. eye-l, eye-r)
+
+NOTE: This feature will produce expected result only if each left and right contents placed at symmetrical position on its layer or merged layer set.
+
 ### Suppressing layer/vector masks `!`
 
 If name of layer or layer sets starting with `!`, its layer/vector mask will be purged before merging.
