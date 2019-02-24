@@ -46,11 +46,13 @@ function suppressMaskAppearance(layer) {
   }
   return r;
 }
-
+function unitToNr(val) {
+  return parseFloat(/^[.0-9]+/.exec(val));
+}
 function splitLayerToLR(layer) {
-  c = doc.width / 2;
-  h = doc.height;
-  w = doc.width;
+  c = unitToNr(doc.width) / 2;
+  h = unitToNr(doc.height);
+  w = unitToNr(doc.width);
   leftRegion = [[0, 0], [c, 0], [c, h], [0, h], [0, 0]];
   rightRegion = [[c, 0], [w, 0], [w, h], [c, h], [c, 0]];
   leftLayer = layer;
