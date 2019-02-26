@@ -43,7 +43,7 @@ function boundsToRect(lb) {
 function l2r(l) {
   var state = resetArtLayer(l);
   var c = unitToNr(doc.width) / 2;
-  var h = doc.height;
+  var h = unitToNr(doc.height);
   var w = unitToNr(doc.width);
   var leftRegion = [[0, 0], [c, 0], [c, h], [0, h], [0, 0]];
   var rightRegion = [[c, 0], [w, 0], [w, h], [c, h], [c, 0]];

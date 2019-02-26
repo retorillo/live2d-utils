@@ -85,28 +85,6 @@ function mirrorLayer(from, to, placement) {
       break;
   }
 }
-function l2r(l) {
-  var state = resetArtLayer(l);
-  var c = unitToNr(doc.width) / 2;
-  var h = doc.height;
-  var w = unitToNr(doc.width);
-  var leftRegion = [[0, 0], [c, 0], [c, h], [0, h], [0, 0]];
-  var rightRegion = [[c, 0], [w, 0], [w, h], [c, h], [c, 0]];
-  doc.activeLayer = l;
-  doc.selection.select(rightRegion);
-  doc.selection.clear();
-  doc.selection.deselect();
-  var lb = boundsToRect(l.bounds);
-  if (lb.empty())
-    return l;
-  var right = l.duplicate(l, ElementPlacement.PLACEBEFORE);
-  right.resize(-100, 100, AnchorPosition.MIDDLECENTER);
-  expect = w - (lb.x + lb.w);
-  right.translate(expect - lb.x, 0);
-  merged = right.merge(); 
-  state.applyTo(merged);
-  return merged;
-}
 function queryLinkID(l){
   var m = /#(.+)$/.exec(l.name);
   if (!m) return;
