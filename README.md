@@ -8,6 +8,12 @@ This project goal is to discover minimal and more helpful preprocess script.
 
 ## Extentions
 
+### Comment `#`
+
+Following text after `#` will be always removed on layer name.
+
+Note that, if its name is completely starting with #, such a layer will be removed from final output. See "Forcely removing".
+
 ### Auto splitting to LR `:`
 
 If name of layer or layer set starting with `:`, it will be split to left and right layers. (eg. eye-l, eye-r)
@@ -43,9 +49,11 @@ foo-*              => foo
 
 ## Utilites
 
-- `l2r`
+- `l2r` (Left to Right Sync)
   - Sync right content with left content while keeping layer structures.
   - Does not support layer and vector masks.
+- `mirror` (Mirror linker)
+  - Sync horizontally half content to another content.
 
 ## Reference
 
