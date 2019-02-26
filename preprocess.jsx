@@ -6,7 +6,7 @@ function buildName(name, prefix) {
   var builder = [];
   if (prefix && prefix.length > 0) builder.push(prefix);
   // NOTE: Cubism may fail to load if layer has contains dot
-  builder.push(name.replace(/\./g, '-').replace(/(^\s+)|(\s+$)/g, ''));
+  builder.push(name.replace(/\./g, '-').replace(/(^\s+)|(\s+$)/g, '').replace(/#.+$/, ''));
   return builder.join('-');
 }
 function map(list, mapper) {
