@@ -3,61 +3,50 @@ doc = doc.duplicate();
 doc.suspendHistory('Live2D Mini Preprocess', 'exec()');
 
 function buildName(name, prefix) {
-  builder = [];
+  var builder = [];
   if (prefix && prefix.length > 0) builder.push(prefix);
   // NOTE: Cubism may fail to load if layer has contains dot
   builder.push(name.replace(/\./g, '-').replace(/(^\s+)|(\s+$)/g, ''));
   return builder.join('-');
 }
-
-function seq(a) {
-  var r = [];
-  for (var c = 0; c < a.length; c++)
-    r.push(a[c]);
-  r.map = function(m) {
-    mapped = [];
-    this.each(function(i) { mapped.push(m(i)); });
-    return mapped;
-  };
-  r.each = function(m) {
-    for (var c = 0; c < this.length; c++)
-      m(this[c]); 
-  };
-  r.reversed_each = function(m) {
-    for (var c = this.length - 1; c >= 0; c--)
-      m(this[c]);
-  }
-  return r;
-} 
-
-function suppressMaskAppearance(layer) {
-  r = { hasLayerMask: false, hasVectorMask: false };
+function map(list, mapper) {
+  var mapped = [];
+  // NOTE: LayerSets and ArtLayers will be chagned on enumeration if modified,
+  //       Should be freeze this volatile colleciton into fixed array.
+  var freeze = [];
+  for (var c = 0; c < list.length; c++)
+    freeze.push(list[c]);
+  for (var c = 0; c < freeze.length; c++)
+    mapped.push(mapper(freeze[c]));
+  return mapped;
+}
+function unitToNr(val) {
+  return parseFloat(/^[.0-9]+/.exec(val));
+}
+function suppressMaskAppearance(l) {
+  var r = { hasLayerMask: false, hasVectorMask: false };
   try {
-    layer.layerMaskDensity = 0;
+    l.layerMaskDensity = 0;
     r.hasLayerMask = true;
   }
   catch (e) {
   }
   try {
-    layer.vectorMaskDensity = 0;
+    l.vectorMaskDensity = 0;
     r.hasVectorMask = true;
   }
   catch (e) {
   }
   return r;
 }
-function unitToNr(val) {
-  return parseFloat(/^[.0-9]+/.exec(val));
-}
-function splitLayerToLR(layer) {
-  c = unitToNr(doc.width) / 2;
-  h = unitToNr(doc.height);
-  w = unitToNr(doc.width);
-  leftRegion = [[0, 0], [c, 0], [c, h], [0, h], [0, 0]];
-  rightRegion = [[c, 0], [w, 0], [w, h], [c, h], [c, 0]];
-  leftLayer = layer;
-  rightLayer = layer.duplicate();
-  rightLayer.move(layer, ElementPlacement.PLACEAFTER);
+function splitLayerToLR(l) {
+  var c = unitToNr(doc.width) / 2;
+  var h = unitToNr(doc.height);
+  var w = unitToNr(doc.width);
+  var leftRegion = [[0, 0], [c, 0], [c, h], [0, h], [0, 0]];
+  var rightRegion = [[c, 0], [w, 0], [w, h], [c, h], [c, 0]];
+  var leftLayer = l;
+  var rightLayer = l.duplicate(l, ElementPlacement.PLACEAFTER);
   rightLayer.name = leftLayer.name + '-r'; 
   leftLayer.name += '-l';
   doc.activeLayer = leftLayer;
@@ -68,72 +57,107 @@ function splitLayerToLR(layer) {
   doc.selection.clear();
   doc.selection.deselect();
 }
-
-function handleArtLayers(layers, prefix) {
-  // NOTE: grouped = clipping masked
-  groupedLayers = seq([]);
-  return seq(layers).each(function(layer) {
-    if (!layer.visible || /^#/.test(layer.name)) {
-      layer.remove();
+function handleLayers(layers, prefix) {
+  var groups = [];
+  var abandon = function(l) {
+    map(groups, function(gl) { gl.allLocked = false; gl.remove() });
+    groups.splice(0, groups.length);
+    l.allLocked = false;
+    l.remove();
+  };
+  return map(layers, function(l) {
+    if (!l.visible || /^#/.test(l.name)) {
+      // NOTE: Removing groups may affect related states of related layers,
+      // in this time, should not remove.
+      if (l.grouped) {
+        if (l.visible)
+          l.visible = false;
+        groups.splice(0, 0, l);
+      }
+      else
+        abandon(l);
       return;
     }
-    if (layer.isBackgroundLayer)
-      return;
-    if (layer.grouped) {
-      groupedLayers.push(layer);
-      return;
-    }
-    suppresser = /^\(:?)!(.*)$/.exec(layer.name);
+    var suppresser = /^\(:?)!(.*)$/.exec(l.name);
     if (suppresser) {
-      suppressMaskAppearance(layer);
-      layer.name = suppresser[1] + suppresser[2].replace(/^\s+|\s+$/g, '');
+      suppressMaskAppearance(l);
+      l.name = suppresser[1] + suppresser[2].replace(/^\s+|\s+$/g, '');
     }
-    splitter = /^\:(.*)$/.exec(layer.name);
-    if (splitter) {
-      layer.name = splitter[1].replace(/^\s+|\s+$/g, '');
+    var splitter = /^\:(.*)$/.exec(l.name);
+    if (splitter)
+      l.name = splitter[1].replace(/^\s+|\s+$/g, '');
+    switch (l.typename) {
+      case 'ArtLayer':
+        if (l.isBackgroundLayer) {
+          abandon(l);
+          return;
+        }
+        if (l.grouped) {
+          groups.splice(0, 0, l);
+          return;
+        }
+        break;
+      case 'LayerSet':
+        if (!l.layers.length)  {
+          abandon(l);
+          return;
+        }
+        var prefixer = /^(.+?)(-\*)$/.exec(l.name);
+        if (prefixer) l.name = prefixer[1]; 
+        var forcer = /^@/
+        if (forcer.exec(l.name)) {
+          l.name = buildName(l.name.substr(1), prefix);
+          l.merge();
+        }
+        else {
+          var hadLayerSets = l.layerSets.length;
+          handleLayers(l.layers, prefixer ? buildName(prefixer[1], prefix) : prefix);
+          if (l.layers.length == 0) {
+            abandon(l);
+            return;
+          }
+          // NOTE: On this version, if l-set has clipping mask, merged them to one l forcely.
+          // TODO: Improve this behavior by implementing the following:
+          // (1) merge l-set first
+          // (2) organize groups and duplicated merged l-set into newly crated l-set
+          // (3) merge them into one l
+          // (4) select pixels l-set created step 1, and invert selection
+          // (5) remove pixels from l created step 3
+          if (groups.length == 0 && hadLayerSets)
+            return;
+          l = l.merge();
+        }
+        break;
+      default:
+        return;
     }
-    set = doc.layerSets.add();
-    set.name = layer.name;
-    set.move(layer, ElementPlacement.PLACEBEFORE);
-    layer.move(set, ElementPlacement.INSIDE);
-    placeTarget = layer;
-    groupedLayers.reversed_each(function(l) {
-      l.move(placeTarget, ElementPlacement.PLACEBEFORE);
-      l.grouped = true;
-      placeTarget = l;
+    var name = buildName(l.name, prefix);
+    var merger = doc.layerSets.add();
+    merger.name = l.name + ' (merger)'
+    merger.move(l, ElementPlacement.PLACEAFTER);
+    l.move(merger, ElementPlacement.INSIDE);
+    var placer = l;
+    map(groups, function(gl) {
+      if (!gl.visible) {
+        gl.allLocked = false;
+        gl.remove();
+        return;
+      }
+      gl.move(placer, ElementPlacement.PLACEBEFORE);
+      gl.grouped = true;
+      placer = gl;
     });
-    groupedLayers = seq([]);
-    set.name = buildName(layer.name, prefix);
-    merged = set.merge(); 
+    groups.splice(0, groups.length);
+    merger.name = name;
+    if (!merger.layers.length) {
+      merger.remove();
+      return;
+    }
+    merged = merger.merge(); 
     if (splitter)
       splitLayerToLR(merged);
   });
 }
-
-function handleLayerSets(sets, prefix) {
-  seq(sets).each(function(set) {
-    if (!set.visible || /^#/.test(set.name) || !(set.artLayers.length + set.layerSets.length))  {
-      set.remove();
-      return;
-    }
-    prefixer = /^(.+?)(-\*)$/.exec(set.name);
-    if (prefixer) set.name = prefixer[1]; 
-    if (/^@/.exec(set.name)) {
-      set.name = buildName(set.name.substr(1), prefix);
-      set.merge();
-      return;
-    }
-    handleArtLayers(set.artLayers, prefixer ? buildName(prefixer[1], prefix) : prefix);
-    if (set.layerSets.length > 0) {
-      handleLayerSets(set.layerSets, prefixer ? buildName(prefixer[1], prefix) : prefix);
-      return;
-    }
-    layer = set.merge();
-    handleArtLayers([layer], prefix)
-  });
-}
-
 function exec() {
-  handleArtLayers(doc.artLayers);
-  handleLayerSets(doc.layerSets);
+  handleLayers(doc.layers);
 }

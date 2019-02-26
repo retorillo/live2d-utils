@@ -8,7 +8,7 @@ This project goal is to discover minimal and more helpful preprocess script.
 
 ## Extentions
 
-### Auto splitting to LR
+### Auto splitting to LR `:`
 
 If name of layer or layer set starting with `:`, it will be split to left and right layers. (eg. eye-l, eye-r)
 
@@ -40,6 +40,12 @@ foo-*              => foo
        `--- grault => foo-corge-grault
 
 ```
+
+## Utilites
+
+- `l2r`
+  - Sync right content with left content while keeping layer structures.
+  - Does not support layer and vector masks.
 
 ## Reference
 
