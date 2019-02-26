@@ -55,6 +55,9 @@ foo-*              => foo
 - `mirror` (Mirror linker)
   - Horizontal mirroring copy from current active layer to other layers that has same mirror ID.
   - For example: select `leftSholder #mirror(sholder)` layer set, then load this script, all layer sets that has ID `mirror(sholder)` will be affected.
+- `fill` (Fill sync)
+  - Fill by current selected color by finding same `fill(id)` layers on entire document.
+  - For example: select `face #(skin)` layer, then load this script, all layers that has id `fill(skin)` will be affected.
 
 ## Reference
 
