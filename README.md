@@ -53,7 +53,8 @@ foo-*              => foo
   - Sync right content with left content while keeping layer structures.
   - Does not support layer and vector masks.
 - `mirror` (Mirror linker)
-  - Sync horizontally half content to another content.
+  - Horizontal mirroring copy from current active layer to other layers that has same mirror ID.
+  - For example: select `leftSholder #mirror(sholder)` layer set, then load this script, all layer sets that has ID `mirror(sholder)` will be affected.
 
 ## Reference
 
