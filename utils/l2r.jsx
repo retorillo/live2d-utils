@@ -12,12 +12,19 @@ function map(list, mapper) {
   return mapped;
 }
 function unitToNr(val) {
-  return parseFloat(/^[.0-9]+/.exec(val));
+  m = /^-?[.0-9]+/.exec(val);
+  if (!m) {
+    msg = 'Cannot parse UnitValue:' + val; 
+    alert(msg);
+    throw msg;
+  }
+  return parseFloat(m[0]);
 }
 function resetArtLayer(l) {
   var props = [ ['blendMode', BlendMode.NORMAL],
             ['fillOpacity', 100], 
             ['pixelsLocked', false],
+            ['positionLocked', false],
             ['transparentPixelsLocked', false],
             ['visible', true] ];
   var state = {};
@@ -42,9 +49,9 @@ function boundsToRect(lb) {
 }
 function l2r(l) {
   var state = resetArtLayer(l);
-  var c = unitToNr(doc.width) / 2;
-  var h = unitToNr(doc.height);
   var w = unitToNr(doc.width);
+  var h = unitToNr(doc.height);
+  var c = w / 2;
   var leftRegion = [[0, 0], [c, 0], [c, h], [0, h], [0, 0]];
   var rightRegion = [[c, 0], [w, 0], [w, h], [c, h], [c, 0]];
   doc.activeLayer = l;
@@ -52,11 +59,13 @@ function l2r(l) {
   doc.selection.clear();
   doc.selection.deselect();
   var lb = boundsToRect(l.bounds);
-  if (lb.empty())
+  if (lb.empty()) {
+    state.applyTo(l);
     return l;
+  }
   var right = l.duplicate(l, ElementPlacement.PLACEBEFORE);
   right.resize(-100, 100, AnchorPosition.MIDDLECENTER);
-  expect = w - (lb.x + lb.w);
+  var expect = w - (lb.x + lb.w);
   right.translate(expect - lb.x, 0);
   merged = right.merge(); 
   state.applyTo(merged);
