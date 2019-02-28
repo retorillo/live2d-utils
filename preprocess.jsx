@@ -1,3 +1,5 @@
+#include 'lib.jsx'
+
 var doc = app.activeDocument;
 doc = doc.duplicate();
 doc.suspendHistory('Live2D Mini Preprocess', 'exec()');
@@ -8,20 +10,6 @@ function buildName(name, prefix) {
   // NOTE: Cubism may fail to load if layer has contains dot
   builder.push(name.replace(/\./g, '-').replace(/(^\s+)|(\s+$)/g, '').replace(/#.+$/, ''));
   return builder.join('-');
-}
-function map(list, mapper) {
-  var mapped = [];
-  // NOTE: LayerSets and ArtLayers will be chagned on enumeration if modified,
-  //       Should be freeze this volatile colleciton into fixed array.
-  var freeze = [];
-  for (var c = 0; c < list.length; c++)
-    freeze.push(list[c]);
-  for (var c = 0; c < freeze.length; c++)
-    mapped.push(mapper(freeze[c]));
-  return mapped;
-}
-function unitToNr(val) {
-  return parseFloat(/^[.0-9]+/.exec(val));
 }
 function suppressMaskAppearance(l) {
   var r = { hasLayerMask: false, hasVectorMask: false };

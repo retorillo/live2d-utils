@@ -1,29 +1,9 @@
+#include 'lib.jsx'
+
 var doc = app.activeDocument;
 var counter = 0;
 doc.suspendHistory('Fill sync', 'exec()');
 
-function union(list1, list2) {
-  var u = [];
-  for (var c = 0; c < Math.max(list1.length, list2.length); c++)
-    u.push([list1[c], list2[c]]); 
-  return u;
-}
-function freeze(list) {
-  var freezed = [];
-  for (var c = 0; c < list.length; c++)
-    freezed.push(list[c]);
-  return freezed;  
-}
-function map(list, mapper) {
-  var mapped = [];
-  var f = freeze(list);
-  for (var c = 0; c < f.length; c++)
-    mapped.push(mapper(f[c]));
-  return mapped;
-}
-function unitToNr(val) {
-  return parseFloat(/^[.0-9]+/.exec(val));
-}
 function queryLinkID(l){
   var m = /#(.+)$/.exec(l.name);
   if (!m) return;

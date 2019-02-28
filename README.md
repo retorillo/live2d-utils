@@ -1,38 +1,40 @@
-# Live2D Mini Preprocess
+# live2d-utils
 
 **WORKING IN PROGRESS**
+
+## preprocess.jsx
 
 The [original preprocess script](http://sites.cybernoids.jp/cubism2/tools/jsx) is classic, and has not been updated over 5 years.
 
 This project goal is to discover minimal and more helpful preprocess script.
 
-## Extentions
+### Extentions
 
-### Comment `#`
+#### Comment `#`
 
 Following text after `#` will be always removed on layer name.
 
 Note that, if its name is completely starting with #, such a layer will be removed from final output. See "Forcely removing".
 
-### Auto splitting to LR `:`
+#### Auto splitting to LR `:`
 
 If name of layer or layer set starting with `:`, it will be split to left and right layers. (eg. eye-l, eye-r)
 
 NOTE: This feature will produce expected result only if each left and right contents placed at symmetrical position on its layer or merged layer set.
 
-### Suppressing layer/vector masks `!`
+#### Suppressing layer/vector masks `!`
 
 If name of layer or layer sets starting with `!`, its layer/vector mask will be purged before merging.
 
-### Forcely removing `#`
+#### Forcely removing `#`
 
 Layer or layer sets that name starting with `#` will be forcely removed regardless of its visiblity.
 
-### Forcely merging `@`
+#### Forcely merging `@`
 
 Layer sets that name starting with `@` will be forcely merged no matter whether it has decendant sets.
 
-### Auto prefixing `-*`
+#### Auto prefixing `-*`
 
 Layer set that name ending with `-*` will be applied auto prefixing procedure to its decendants.
 
@@ -47,17 +49,20 @@ foo-*              => foo
 
 ```
 
-## Utilites
+## l2r.jsx
 
-- `l2r` (Left to Right Sync)
-  - Sync right content with left content while keeping layer structures.
-  - Does not support layer and vector masks.
-- `mirror` (Mirror linker)
-  - Horizontal mirroring copy from current active layer to other layers that has same mirror ID.
-  - For example: select `leftSholder #mirror(sholder)` layer set, then load this script, all layer sets that has ID `mirror(sholder)` will be affected.
-- `fill` (Fill sync)
-  - Fill by current selected color by finding same `fill(id)` layers on entire document.
-  - For example: select `face #(skin)` layer, then load this script, all layers that has id `fill(skin)` will be affected.
+- Sync right content with left content while keeping layer structures.
+- Does not support layer and vector masks.
+
+## mirror.jsx
+
+- Horizontal mirroring copy from current active layer to other layers that has same mirror ID.
+- For example: select `leftSholder #mirror(sholder)` layer set, then load this script, all layer sets that has ID `mirror(sholder)` will be affected.
+
+## fill.jsx
+  
+- Fill by current selected color by finding same `fill(id)` layers on entire document.
+- For example: select `face #(skin)` layer, then load this script, all layers that has id `fill(skin)` will be affected.
 
 ## Reference
 
@@ -65,6 +70,6 @@ foo-*              => foo
 
 ## Licensed
 
-Authored by Retorillo
+Licensed under the MIT
 
-No Rights Reserved (CC 0)
+Copyright (C) 2019 Retorillo
