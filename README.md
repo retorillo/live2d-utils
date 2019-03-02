@@ -62,13 +62,19 @@ foo-*              => foo
 ## fill.jsx
   
 - Fill by current selected color by finding same `fill(id)` layers on entire document.
-- For example: select `face #(skin)` layer, then load this script, all layers that has id `fill(skin)` will be affected.
+- For example: select `face #fill(skin)` layer, then load this script, all layers that has id `fill(skin)` will be affected.
+
+## dup.jsx
+
+- Duplicate "strictly" current document. This may fix broken PSD file that cannot be load by Cubism.
+- Note: This process is included in `preprocess.jsx`
 
 ## Reference
 
 - [Photoshop CC Javascript Scripting Reference 2019](https://www.adobe.com/content/dam/acom/en/devnet/photoshop/pdfs/photoshop-cc-javascript-ref-2019.pdf)
 
 ## Licensed
+
 
 Licensed under the MIT
 

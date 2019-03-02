@@ -1,8 +1,7 @@
 #include 'lib.jsx'
 
 var doc = app.activeDocument;
-doc = doc.duplicate();
-doc.suspendHistory('Live2D Mini Preprocess', 'exec()');
+doc.suspendHistory('Live2D Preprocess', 'exec()');
 
 function buildName(name, prefix) {
   var builder = [];
@@ -147,5 +146,6 @@ function handleLayers(layers, prefix) {
   });
 }
 function exec() {
+  doc = duplicateDocument(doc, '-preprocessed');
   handleLayers(doc.layers);
 }

@@ -53,3 +53,26 @@ function resetArtLayer(l) {
   });
   return state;
 }
+// NOTE: Newly created document can be successfully loaded in good chance by Cubism
+function duplicateDocument(src, suffix) {
+  var dst = app.documents.add(src.width, src.height, src.resolution,
+    src.name.replace(/\.psd$/i, '') + suffix, NewDocumentMode.RGB);
+  var init = dst.layers[0];
+  var instgt = init
+  var statusQueue = [];
+  map(src.layers, function(l) {
+    // Only can duplicate in frontmost document
+    app.activeDocument = src;
+    instgt = l.duplicate(instgt, 
+      instgt === init ? ElementPlacement.PLACEBEFORE : ElementPlacement.PLACEAFTER);
+    statusQueue.push([instgt, l]);
+  });
+  app.activeDocument = dst;
+  // Only can remove and modify in frontmost document
+  init.remove();
+  map(statusQueue, function(i) {
+    i[0].name = i[1].name;
+    i[0].visible = i[1].visible;
+  });
+  return dst; 
+}
