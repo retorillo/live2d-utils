@@ -73,6 +73,8 @@ function duplicateDocument(src, suffix) {
   map(statusQueue, function(i) {
     i[0].name = i[1].name;
     i[0].visible = i[1].visible;
+    if (i[0].typename == 'ArtLayer' && i[0].grouped != i[1].grouped)
+      i[0].grouped = i[1].grouped;
   });
   return dst; 
 }
