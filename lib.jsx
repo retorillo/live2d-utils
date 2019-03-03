@@ -1,7 +1,9 @@
 function freeze(list) {
+  if (list instanceof Array && list.__freezed) return list;
   var freezed = [];
   for (var c = 0; c < list.length; c++)
     freezed.push(list[c]);
+  freezed.__freezed = true;
   return freezed;  
 }
 function map(list, mapper) {
@@ -77,4 +79,14 @@ function duplicateDocument(src, suffix) {
       i[0].grouped = i[1].grouped;
   });
   return dst; 
+}
+function unwrap(set) {
+  if (set.typename != 'LayerSet')
+    throw 'Invalid argument: set must be LayerSet'; 
+  var exposed = freeze(set.layers);
+  map(exposed, function(l) {
+    l.move(set, ElementPlacement.PLACEBEFORE);
+  }); 
+  set.remove();
+  return exposed;
 }

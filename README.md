@@ -16,6 +16,10 @@ Following text after `#` will be always removed on layer name.
 
 Note that, if its name is completely starting with #, such a layer will be removed from final output. See "Forcely removing".
 
+#### Unwrapping `-`
+
+If name of layer set starting with `-`, and it had not been merged, their children are exposed from currently assigned layer set.
+
 #### Auto splitting to LR `:`
 
 If name of layer or layer set starting with `:`, it will be split to left and right layers. (eg. eye-l, eye-r)

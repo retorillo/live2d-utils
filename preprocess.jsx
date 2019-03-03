@@ -79,14 +79,29 @@ function handleLayers(layers, prefix) {
         abandon(l);
       return;
     }
-    var suppresser = /^(:?)!(.*)$/.exec(l.name);
-    if (suppresser) {
-      l = suppressMaskAppearance(l);
-      l.name = suppresser[1] + suppresser[2].replace(/^\s+|\s+$/g, '');
+
+    var m, forcer, suppressor, splitter, unwrapper;
+    var name = l.name;
+    while (m = /^[@!:-]/.exec(name)) {
+      name = name.substr(1).replace(/^\s+/, '');
+      switch (m[0]) {
+        case '@':
+          forcer = true;
+          break;
+        case '!':
+          suppressor = true;
+          l = suppressMaskAppearance(l);
+          break;
+        case ':':
+          splitter = true;
+          break;
+        case '-':
+          unwrapper = true;
+          break;
+      }
     }
-    var splitter = /^\:(.*)$/.exec(l.name);
-    if (splitter)
-      l.name = splitter[1].replace(/^\s+|\s+$/g, '');
+    l.name = name.replace(/^\s+|\s+$/g, '');
+
     switch (l.typename) {
       case 'ArtLayer':
         if (l.isBackgroundLayer) {
@@ -103,14 +118,9 @@ function handleLayers(layers, prefix) {
           abandon(l);
           return;
         }
-        var prefixer = /^(.+?)(-\*)$/.exec(l.name);
-        if (prefixer) l.name = prefixer[1]; 
-        var forcer = /^@/
-        if (forcer.exec(l.name)) {
-          l.name = buildName(l.name.substr(1), prefix);
-          l.merge();
-        }
-        else {
+        if (!forcer) {
+          var prefixer = /^(.+?)(-\*)$/.exec(l.name);
+          if (prefixer) l.name = prefixer[1]; 
           var hadLayerSets = l.layerSets.length;
           handleLayers(l.layers, prefixer ? buildName(prefixer[1], prefix) : prefix);
           if (l.layers.length == 0) {
@@ -124,10 +134,13 @@ function handleLayers(layers, prefix) {
           // (3) merge them into one l
           // (4) select pixels l-set created step 1, and invert selection
           // (5) remove pixels from l created step 3
-          if (groups.length == 0 && hadLayerSets)
+          if (groups.length == 0 && hadLayerSets) {
+            if (unwrapper)
+              unwrap(l);
             return;
-          l = l.merge();
+          }
         }
+        l = l.merge();
         break;
       default:
         return;
