@@ -16,6 +16,10 @@ Following text after `#` will be always removed on layer name.
 
 Note that, if its name is completely starting with #, such a layer will be removed from final output. See "Forcely removing".
 
+#### Forcely outputting `?`
+
+If name of layer set or layer starting with `?`, it will be forcely output no matter whether it is invisible.
+
 #### Unwrapping `-`
 
 If name of layer set starting with `-`, and it had not been merged, their children are exposed from currently assigned layer set.

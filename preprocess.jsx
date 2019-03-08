@@ -67,6 +67,30 @@ function handleLayers(layers, prefix) {
     l.remove();
   };
   return map(layers, function(l) {
+    var m, forcer, suppressor, splitter, unwrapper, appearer;
+    var name = l.name;
+    while (m = /^[-@!:?]/.exec(name)) {
+      name = name.substr(1).replace(/^\s+/, '');
+      switch (m[0]) {
+        case '-':
+          unwrapper = true;
+          break;
+        case '@':
+          forcer = true;
+          break;
+        case '!':
+          suppressor = true;
+          l = suppressMaskAppearance(l);
+          break;
+        case ':':
+          splitter = true;
+          break;
+        case '?':
+          appearer = true;
+          l.visible = true;
+          break;
+      }
+    }
     if (!l.visible || /^#/.test(l.name)) {
       // NOTE: Removing groups may affect related states of related layers,
       // in this time, should not remove.
@@ -78,27 +102,6 @@ function handleLayers(layers, prefix) {
       else
         abandon(l);
       return;
-    }
-
-    var m, forcer, suppressor, splitter, unwrapper;
-    var name = l.name;
-    while (m = /^[@!:-]/.exec(name)) {
-      name = name.substr(1).replace(/^\s+/, '');
-      switch (m[0]) {
-        case '@':
-          forcer = true;
-          break;
-        case '!':
-          suppressor = true;
-          l = suppressMaskAppearance(l);
-          break;
-        case ':':
-          splitter = true;
-          break;
-        case '-':
-          unwrapper = true;
-          break;
-      }
     }
     l.name = name.replace(/^\s+|\s+$/g, '');
 
