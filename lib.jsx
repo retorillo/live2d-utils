@@ -29,10 +29,13 @@ function unitToNr(val) {
   return parseFloat(m[0]);
 }
 function boundsToRect(lb) {
-  // NOTE: bounds is LTRB format: [x1, y1, x2, y2]
+  // NOTE: bounds is LTRB or RTLB format
   var b = map(lb, unitToNr);
-  return { x: b[0], y: b[1], w: b[2] - b[0], h: b[3] - b[1],
-    empty: function() { return this.w == this.h && this.h == 0; } }; 
+  l = Math.min(b[0], b[2]);
+  r = Math.max(b[0], b[2]);
+  return { x: l, y: b[1], w: r - l, h: b[3] - b[1],
+    empty: function() { return this.w == this.h && this.h == 0; },
+    toString: function() { return [ this.x, this.y, this.w, this.h ].join(); } }; 
 }
 function resetArtLayer(l) {
   var props = [ ['blendMode', BlendMode.NORMAL],

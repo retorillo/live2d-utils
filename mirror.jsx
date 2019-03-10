@@ -3,15 +3,28 @@
 var doc = app.activeDocument;
 doc.suspendHistory('Mirror linking', 'exec()');
 
+function deactivateMasks(l) {
+  var lmd = l.layerMaskDensity;
+  var vmd = l.vectorMaskDensity;
+  try { l.layerMaskDensity = 0; } catch (e) { }
+  try { l.vectorMaskDensity = 0; } catch (e) { }
+  return function() {
+    try { l.layerMaskDensity = lmd; } catch (e) { }
+    try { l.vectorMaskDensity = vmd; } catch (e) { }
+  }
+}
 function flipLayer(l, nameref){
   var w = unitToNr(doc.width);
-  var lb = boundsToRect(l.bounds);
+  // NOTE: mask can affect its bounds
+  var reactivate = deactivateMasks(l);
+  var lb = boundsToRect(l.boundsNoEffects);
   if (lb.empty())
     return;
   l.resize(-100, 100, AnchorPosition.MIDDLECENTER);
   expect = w - (lb.x + lb.w);
   l.translate(expect - lb.x, 0);
-  l.name = nameref.name;
+  l.name = nameref.name
+  reactivate();
 }
 function flipLayers(layers, nameref){
   map(union(layers, nameref), function(ln) {
@@ -22,7 +35,8 @@ function flipLayers(layers, nameref){
         flipLayer(l, n);
         break;
       case 'LayerSet':
-        flipLayer(l.layers, n.layers);
+        flipLayers(l.layers, n.layers);
+        l.name = n.name;
         break;
     }
   });
