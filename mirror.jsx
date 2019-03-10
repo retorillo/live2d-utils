@@ -13,45 +13,31 @@ function deactivateMasks(l) {
     try { l.vectorMaskDensity = vmd; } catch (e) { }
   }
 }
-function flipLayer(l, nameref){
+function flipLayer(l){
   var w = unitToNr(doc.width);
-  // NOTE: mask can affect its bounds
-  var reactivate = deactivateMasks(l);
-  var lb = boundsToRect(l.boundsNoEffects);
-  if (lb.empty())
-    return;
-  l.resize(-100, 100, AnchorPosition.MIDDLECENTER);
-  expect = w - (lb.x + lb.w);
-  l.translate(expect - lb.x, 0);
-  l.name = nameref.name
-  reactivate();
-}
-function flipLayers(layers, nameref){
-  map(union(layers, nameref), function(ln) {
-    var l = ln[0];
-    var n = ln[1];
-    switch (l.typename) {
-      case 'ArtLayer':
-        flipLayer(l, n);
-        break;
-      case 'LayerSet':
-        flipLayers(l.layers, n.layers);
-        l.name = n.name;
-        break;
-    }
-  });
+  var h = unitToNr(doc.height);
+  var flipper = l.parent.layerSets.add();
+  flipper.move(l, ElementPlacement.PLACEBEFORE);
+  var dummy = flipper.artLayers.add();
+  l.move(dummy, ElementPlacement.PLACEBEFORE);
+  doc.selection.deselect();
+  doc.selection.select([ [0, 0], [w, 0], [w, h], [0, h], [0, 0] ]); 
+  doc.selection.fill(app.backgroundColor);
+  doc.selection.deselect();
+  var bounds = boundsToRect(flipper.bounds);
+  if (bounds.x != 0 || bounds.y != 0 || bounds.w != w || bounds.h != h) {
+    var msg = 'Current flipper does not support its content is sticked out its canvas';
+    alert(msg);
+    throw msg;
+  }
+  flipper.resize(-100, 100, AnchorPosition.MIDDLECENTER);
+  l.move(flipper, ElementPlacement.PLACEBEFORE);
+  flipper.remove();
 }
 function mirrorLayer(from, to, placement) {
   var l = from.duplicate(to, placement);
   l.name = to.name;
-  switch (from.typename) {
-    case 'ArtLayer':
-      flipLayer(l, from);
-      break;
-    case 'LayerSet':
-      flipLayers(l.layers, from.layers);
-      break;
-  }
+  flipLayer(l);
 }
 function queryLinkID(l){
   var m = /#(.+)$/.exec(l.name);
