@@ -38,6 +38,16 @@ function mirrorLayer(from, to, placement) {
   var l = from.duplicate(to, placement);
   l.name = to.name;
   flipLayer(l);
+  var fixname = function(layers, nameref) {
+    map(union(layers, nameref), function(union) {
+      if (union[0].typename == 'LayerSet')
+        fixname(union[0].layers, union[1].layers);
+      else
+        union[0].name = union[1].name;
+    });
+  }; 
+  if (l.typename == 'LayerSet')
+    fixname(l.layers, from.layers);
 }
 function queryLinkID(l){
   var m = /#(.+)$/.exec(l.name);
