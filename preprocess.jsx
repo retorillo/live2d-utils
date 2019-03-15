@@ -1,8 +1,19 @@
 #include 'lib.jsx'
 
+var counter = 0;
+var names = {}
 var doc = app.activeDocument;
 doc.suspendHistory('Live2D Preprocess', 'exec()');
 
+function verifyName(name) {
+  if (names[name]) {
+    var msg = 'Name confliction found: Name "' + name + '" is already used.';
+    alert(msg);
+    throw msg;
+  }
+  names[name] = true;
+  counter++;
+}
 function buildName(name, prefix) {
   var builder = [];
   if (prefix && prefix.length > 0) builder.push(prefix);
@@ -57,6 +68,7 @@ function splitLayerToLR(l) {
   doc.selection.select(leftRegion);
   doc.selection.clear();
   doc.selection.deselect();
+  return [leftLayer, rightLayer];
 }
 function handleLayers(layers, prefix) {
   var groups = [];
@@ -177,10 +189,18 @@ function handleLayers(layers, prefix) {
     }
     merged = merger.merge(); 
     if (splitter)
-      splitLayerToLR(merged);
+      merged = splitLayerToLR(merged);
+    else
+      merged = [ merged ];
+    map(merged, function(l) {
+      verifyName(l.name);
+      counter++;
+    }); 
   });
 }
 function exec() {
   doc = duplicateDocument(doc, '-preprocessed');
   handleLayers(doc.layers);
+  alert(counter + ' layers were successfully outputted.'
+    + 'There were no name confliction found.');
 }
