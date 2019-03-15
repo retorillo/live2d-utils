@@ -67,9 +67,9 @@ function handleLayers(layers, prefix) {
     l.remove();
   };
   return map(layers, function(l) {
-    var m, forcer, suppressor, splitter, unwrapper, appearer;
+    var m, forcer, suppressor, splitter, unwrapper, appearer, bypasser;
     var name = l.name;
-    while (m = /^[-@!:?]/.exec(name)) {
+    while (m = /^[-@!:?*]/.exec(name)) {
       name = name.substr(1).replace(/^\s+/, '');
       switch (m[0]) {
         case '-':
@@ -88,6 +88,9 @@ function handleLayers(layers, prefix) {
         case '?':
           appearer = true;
           l.visible = true;
+          break;
+        case '*':
+          bypasser = true;
           break;
       }
     }
@@ -143,6 +146,8 @@ function handleLayers(layers, prefix) {
             return;
           }
         }
+        if (bypasser)
+          return;
         l = l.merge();
         break;
       default:
