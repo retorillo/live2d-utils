@@ -1,11 +1,15 @@
 #include 'lib.jsx'
 
 var counter = 0;
-var names = {}
+var names = {};
+var sets = {};
 var doc = app.activeDocument;
 doc.suspendHistory('Live2D Preprocess', 'exec()');
 
-function verifyName(name) {
+function registerName(name, set) {
+  if (!sets[set])
+    sets[set] = [];
+  sets[set].push(name);
   if (names[name]) {
     var msg = 'Name confliction found: Name "' + name + '" is already used.';
     alert(msg);
@@ -13,6 +17,14 @@ function verifyName(name) {
   }
   names[name] = true;
   counter++;
+}
+function releaseNames(set) {
+  if (!sets[set]) return;
+  map(sets[set], function(l) {
+    names[l] = false;
+    counter--;
+  });
+  sets[set] = null;
 }
 function buildName(name, prefix) {
   var builder = [];
@@ -160,6 +172,7 @@ function handleLayers(layers, prefix) {
         }
         if (bypasser)
           return;
+        releaseNames(l);
         l = l.merge();
         break;
       default:
@@ -193,8 +206,7 @@ function handleLayers(layers, prefix) {
     else
       merged = [ merged ];
     map(merged, function(l) {
-      verifyName(l.name);
-      counter++;
+      registerName(l.name, l.parent);
     }); 
   });
 }
@@ -202,5 +214,5 @@ function exec() {
   doc = duplicateDocument(doc, '-preprocessed');
   handleLayers(doc.layers);
   alert(counter + ' layers were successfully outputted.'
-    + 'There were no name confliction found.');
+     + ' There were no name confliction found.');
 }
