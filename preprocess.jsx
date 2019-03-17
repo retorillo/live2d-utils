@@ -71,8 +71,9 @@ function splitLayerToLR(l) {
   var rightRegion = [[c, 0], [w, 0], [w, h], [c, h], [c, 0]];
   var leftLayer = l;
   var rightLayer = l.duplicate(l, ElementPlacement.PLACEAFTER);
-  rightLayer.name = leftLayer.name + '-r'; 
-  leftLayer.name += '-l';
+  // NOTE: left parts exists at right region, rightp parts is left respectively.
+  rightLayer.name = leftLayer.name + '-L';
+  leftLayer.name += '-R';
   doc.activeLayer = leftLayer;
   doc.selection.select(rightRegion);
   doc.selection.clear();
