@@ -30,8 +30,8 @@ function handleLayers(layers, id) {
         handleLayers(l.layers, id);
       return;
     }
-
     doc.activeLayer = l;
+    l.allLocked = false;
     // NOTE: unique vector will appears if "Shape" layer selected.
     var path = doc.pathItems[doc.pathItems.length - 1];
     if (path != getLastPathOnRasterLayer()) {
