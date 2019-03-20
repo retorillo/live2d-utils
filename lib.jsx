@@ -93,3 +93,70 @@ function unwrap(set) {
   set.remove();
   return exposed;
 }
+function selectionToLayerSet() {
+  var idMk = charIDToTypeID( "Mk  " );
+  var descMk = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var refnull = new ActionReference();
+  var idlayerSection = stringIDToTypeID( "layerSection" );
+  refnull.putClass( idlayerSection );
+  descMk.putReference( idnull, refnull );
+  var idFrom = charIDToTypeID( "From" );
+  var refFrom = new ActionReference();
+  var idLyr = charIDToTypeID( "Lyr " );
+  var idOrdn = charIDToTypeID( "Ordn" );
+  var idTrgt = charIDToTypeID( "Trgt" );
+  refFrom.putEnumerated( idLyr, idOrdn, idTrgt );
+  descMk.putReference( idFrom, refFrom );
+  var idlayerSectionStart = stringIDToTypeID( "layerSectionStart" );
+  descMk.putInteger( idlayerSectionStart, 4 );
+  var idlayerSectionEnd = stringIDToTypeID( "layerSectionEnd" );
+  descMk.putInteger( idlayerSectionEnd, 5 );
+  var idNm = charIDToTypeID( "Nm  " );
+  descMk.putString( idNm, """rough""" );
+  executeAction( idMk, descMk, DialogModes.NO );
+  return doc.activeLayer;
+}
+
+var LayerColor     = {};
+LayerColor.RED     = 'Rd  ';
+LayerColor.ORANGE  = 'Orng';
+LayerColor.YELLOW  = 'Ylw ';
+LayerColor.GREEN   = 'Grn ';
+LayerColor.BLUE    = 'Bl  ';
+LayerColor.VIOLET  = 'Vlt ';
+LayerColor.GLEY    = 'Gry ';
+LayerColor.NONE    = 'None';
+
+function getDocument(l) {
+  while (l.typename != 'Document' && l.parent)
+    l = l.parent;
+  return l;
+}
+function setLayerColor(l, color) {
+  var ad = app.activeDocument;
+  var al = ad.activeLayer;
+  var doc = app.activeDocument = getDocument(l);
+  doc.activeLayer = l;
+  var idsetd = charIDToTypeID( "setd" );
+  var descSetd = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idLyr = charIDToTypeID( "Lyr " );
+  var idOrdn = charIDToTypeID( "Ordn" );
+  var idTrgt = charIDToTypeID( "Trgt" );
+  ref.putEnumerated( idLyr, idOrdn, idTrgt );
+  descSetd.putReference( idnull, ref );
+  var idT = charIDToTypeID( "T   " );
+  var descT = new ActionDescriptor();
+  var idClr = charIDToTypeID( "Clr " );
+  var idClr = charIDToTypeID( "Clr " );
+  var idNone = charIDToTypeID( color );
+  descT.putEnumerated( idClr, idClr, idNone );
+  var idLyr = charIDToTypeID( "Lyr " );
+  descSetd.putObject( idT, idLyr, descT );
+  executeAction( idsetd, descSetd, DialogModes.NO ); 
+  app.activeDocument = ad;
+  ad.activeLayer = al;
+  
+}
