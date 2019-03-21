@@ -158,5 +158,49 @@ function setLayerColor(l, color) {
   executeAction( idsetd, descSetd, DialogModes.NO ); 
   app.activeDocument = ad;
   ad.activeLayer = al;
-  
+}
+function deleteLayerMask(l) {
+  var ad = app.activeDocument;
+  var al = ad.activeLayer;
+  var doc = app.activeDocument = getDocument(l);
+  doc.activeLayer = l;
+  var idDlt = charIDToTypeID( "Dlt " );
+  var desc = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idChnl = charIDToTypeID( "Chnl" );
+  var idOrdn = charIDToTypeID( "Ordn" );
+  var idTrgt = charIDToTypeID( "Trgt" );
+  ref.putEnumerated( idChnl, idOrdn, idTrgt );
+  desc.putReference( idnull, ref );
+  executeAction( idDlt, desc, DialogModes.NO );
+  app.activeDocument = ad;
+  ad.activeLayer = al;
+}
+function deleteVectorMask(l) {
+  var ad = app.activeDocument;
+  var al = ad.activeLayer;
+  var doc = app.activeDocument = getDocument(l);
+  var idDlt = charIDToTypeID( "Dlt " );
+  var desc = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idPath = charIDToTypeID( "Path" );
+  var idPath = charIDToTypeID( "Path" );
+  var idvectorMask = stringIDToTypeID( "vectorMask" );
+  ref.putEnumerated( idPath, idPath, idvectorMask );
+  var idLyr = charIDToTypeID( "Lyr " );
+  var idOrdn = charIDToTypeID( "Ordn" );
+  var idTrgt = charIDToTypeID( "Trgt" );
+  ref.putEnumerated( idLyr, idOrdn, idTrgt );
+  desc.putReference( idnull, ref );
+  executeAction( idDlt, desc, DialogModes.NO );
+  app.activeDocument = ad;
+  ad.activeLayer = al;
+}
+function deleteMasks(l) {
+  try { deleteVectorMask(l); }
+  catch (e) { }
+  try { deleteLayerMask(l); }
+  catch (e) { }
 }

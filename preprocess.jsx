@@ -33,36 +33,6 @@ function buildName(name, prefix) {
   builder.push(name.replace(/\./g, '-').replace(/(^\s+)|(\s+$)/g, '').replace(/#.+$/, ''));
   return builder.join('-');
 }
-function suppressMaskAppearance(l) {
-  if (l.typename == 'ArtLayer') {
-    try {
-      l.layerMaskDensity = 0;
-    }
-    catch (e) {
-    }
-    try {
-      l.vectorMaskDensity = 0;
-    }
-    catch (e) {
-    }
-    return l;
-  }
-  else {
-    var set = l.parent.layerSets.add();
-    set.name = l.name;
-    var dummy = set.artLayers.add();
-    set.move(l, ElementPlacement.PLACEBEFORE);
-    map(l.layers, function(child) {
-      // NOTE: If child is LayerSet, ElementPlacement.INSIDE does not work,
-      //       using dummy and PLACEBEFORE is workaround of this strange behavior.
-      // NOTE: Using PLACEAFTER may unexpectedly move it outside of layer-set.
-      child.move(dummy, ElementPlacement.PLACEBEFORE);
-    });
-    dummy.remove();
-    l.remove();
-    return set;
-  }
-}
 function splitLayerToLR(l) {
   var c = unitToNr(doc.width) / 2;
   var h = unitToNr(doc.height);
@@ -105,7 +75,7 @@ function handleLayers(layers, prefix) {
           break;
         case '!':
           suppressor = true;
-          l = suppressMaskAppearance(l);
+          deleteMasks(l);
           break;
         case ':':
           splitter = true;
