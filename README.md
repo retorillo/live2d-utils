@@ -81,6 +81,22 @@ foo-*              => foo
 - Duplicate "strictly" current document. This may fix broken PSD file that cannot be load by Cubism.
 - Note: This process is included in `preprocess.jsx`
 
+## clear.jsx
+
+- Apply "Clear" action to all layers on current document with keeping current seleciton. (without Background layer) Good for clean up process.
+
+## union.jsx
+
+- Usable snippet for patch creation. Organize all layers and layer sets of current opened documents on into single document without merging.
+
+## visibleonly.jsx
+
+- Remove all hidden layers and layer sets from current document.
+
+## selectonly.jsx
+
+- Remove all deselected layers and layer sets from current document.
+
 ## Reference
 
 - [Photoshop CC Javascript Scripting Reference 2019](https://www.adobe.com/content/dam/acom/en/devnet/photoshop/pdfs/photoshop-cc-javascript-ref-2019.pdf)
