@@ -17,7 +17,10 @@ function getLastPathOnRasterLayer() {
   var al = doc.activeLayer;
   var l = doc.artLayers.add();
   doc.activeLayer = l;
-  __glporl = doc.pathItems[doc.pathItems.length - 1];
+  if (doc.pathItems.length == 0)
+    __glporl = null;
+  else
+    __glporl = doc.pathItems[doc.pathItems.length - 1];
   doc.activeLayer = al;
   l.remove();
   return __glporl;
