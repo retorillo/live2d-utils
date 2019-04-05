@@ -30,7 +30,7 @@ function buildName(name, prefix) {
   var builder = [];
   if (prefix && prefix.length > 0) builder.push(prefix);
   // NOTE: Cubism may fail to load if layer has contains dot
-  builder.push(name.replace(/\./g, '-').replace(/(^\s+)|(\s+$)/g, '').replace(/#.+$/, ''));
+  builder.push(name.replace(/\./g, '-').replace(/(^\s+)|(\s+$)/g, '').replace(/#.*$/, ''));
   return builder.join('-');
 }
 function splitLayerToLR(l) {
@@ -144,34 +144,41 @@ function handleLayers(layers, prefix) {
         if (bypasser)
           return;
         releaseNames(l);
-        l = l.merge();
+        l = merge(l); // l.merge();
         break;
       default:
         return;
     }
+    var merged;
     var name = buildName(l.name, prefix);
-    var merger = doc.layerSets.add();
-    merger.name = l.name + ' (merger)'
-    merger.move(l, ElementPlacement.PLACEAFTER);
-    l.move(merger, ElementPlacement.INSIDE);
-    var placer = l;
-    map(groups, function(gl) {
-      if (!gl.visible) {
-        gl.allLocked = false;
-        gl.remove();
+    if (groups.length > 0) {
+      var merger = doc.layerSets.add();
+      merger.name = l.name + ' (merger)'
+      merger.move(l, ElementPlacement.PLACEAFTER);
+      l.move(merger, ElementPlacement.INSIDE);
+      var placer = l;
+      map(groups, function(gl) {
+        if (!gl.visible) {
+          gl.allLocked = false;
+          gl.remove();
+          return;
+        }
+        gl.move(placer, ElementPlacement.PLACEBEFORE);
+        gl.grouped = true;
+        placer = gl;
+      });
+      groups.splice(0, groups.length);
+      merger.name = name;
+      if (!merger.layers.length) {
+        merger.remove();
         return;
       }
-      gl.move(placer, ElementPlacement.PLACEBEFORE);
-      gl.grouped = true;
-      placer = gl;
-    });
-    groups.splice(0, groups.length);
-    merger.name = name;
-    if (!merger.layers.length) {
-      merger.remove();
-      return;
+      merged = merger.merge(); 
     }
-    merged = merger.merge(); 
+    else {
+      merged = merge(l);
+      merged.name = name;
+    }
     if (splitter)
       merged = splitLayerToLR(merged);
     else

@@ -204,3 +204,69 @@ function deleteMasks(l) {
   try { deleteLayerMask(l); }
   catch (e) { }
 }
+function applyLayerMask(l) {
+  var ad = app.activeDocument;
+  var al = ad.activeLayer;
+  var doc = app.activeDocument = getDocument(l);
+  var idDlt = charIDToTypeID( "Dlt " );
+  var desc = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idChnl = charIDToTypeID( "Chnl" );
+  var idOrdn = charIDToTypeID( "Ordn" );
+  var idTrgt = charIDToTypeID( "Trgt" );
+  ref.putEnumerated( idChnl, idOrdn, idTrgt );
+  desc.putReference( idnull, ref );
+  var idAply = charIDToTypeID( "Aply" );
+  desc.putBoolean( idAply, true );
+  executeAction( idDlt, desc, DialogModes.NO );
+  app.activeDocument = ad;
+  ad.activeLayer = al;
+}
+function rasterizeVectorMask(l) {
+  var ad = app.activeDocument;
+  var al = ad.activeLayer;
+  var doc = app.activeDocument = getDocument(l);
+  var idrasterizeLayer = stringIDToTypeID( "rasterizeLayer" );
+  var desc = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idLyr = charIDToTypeID( "Lyr " );
+  var idOrdn = charIDToTypeID( "Ordn" );
+  var idTrgt = charIDToTypeID( "Trgt" );
+  ref.putEnumerated( idLyr, idOrdn, idTrgt );
+  desc.putReference( idnull, ref );
+  var idWhat = charIDToTypeID( "What" );
+  var idrasterizeItem = stringIDToTypeID( "rasterizeItem" );
+  var idvectorMask = stringIDToTypeID( "vectorMask" );
+  desc.putEnumerated( idWhat, idrasterizeItem, idvectorMask );
+  executeAction( idrasterizeLayer, desc, DialogModes.NO );
+  app.activeDocument = ad;
+  ad.activeLayer = al;
+}
+function rasterizeLayer(l) {
+  var ad = app.activeDocument;
+  var al = ad.activeLayer;
+  var doc = app.activeDocument = getDocument(l);
+  var idrasterizeLayer = stringIDToTypeID( "rasterizeLayer" );
+  var desc = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idLyr = charIDToTypeID( "Lyr " );
+  var idOrdn = charIDToTypeID( "Ordn" );
+  var idTrgt = charIDToTypeID( "Trgt" );
+  ref.putEnumerated( idLyr, idOrdn, idTrgt );
+  desc.putReference( idnull, ref );
+  executeAction( idrasterizeLayer, desc, DialogModes.NO );
+  app.activeDocument = ad;
+  ad.activeLayer = al;
+}
+function merge(l) {
+  if (l.typename == 'ArtLayer')
+    try { rasterizeLayer(l); } catch (e) {}
+  else
+    l = l.merge();
+  try { rasterizeVectorMask(l); } catch (e) {}
+  try { applyLayerMask(l); } catch (e) {}
+  return l;
+}
