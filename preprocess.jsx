@@ -120,7 +120,7 @@ function handleLayers(layers, prefix) {
           return;
         }
         if (!forcer) {
-          var prefixer = /^(.+?)(-\*)$/.exec(l.name);
+          var prefixer = /^(.+)(-\*)\s*(#.*)?$/.exec(l.name);
           if (prefixer) l.name = prefixer[1]; 
           var hadLayerSets = l.layerSets.length;
           handleLayers(l.layers, prefixer ? buildName(prefixer[1], prefix) : prefix);
