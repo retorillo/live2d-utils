@@ -33,7 +33,6 @@ function queryFillID(l){
 function exec() {
   var al = doc.activeLayer;
   var gr = findGroupedRoot(al);
-  alert(gr.root.name);
   var id = queryFillID(gr.root);
   if (!id) {
     alert('fill ID not found');
