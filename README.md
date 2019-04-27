@@ -97,6 +97,10 @@ foo-*              => foo
 
 - Remove all deselected layers and layer sets from current document.
 
+## addlayer
+
+- `addlayer` is set of scripts to create new layer on my naming rule with `fill(FILLID)` instruction.
+
 ## Reference
 
 - [Photoshop CC Javascript Scripting Reference 2019](https://www.adobe.com/content/dam/acom/en/devnet/photoshop/pdfs/photoshop-cc-javascript-ref-2019.pdf)
