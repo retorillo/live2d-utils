@@ -101,6 +101,10 @@ foo-*              => foo
 
 - `addlayer` is set of scripts to create new layer on my naming rule with `fill(FILLID)` instruction.
 
+## mkpalette.jsx
+
+- Powerful script to generate color palette. Should use by combining with `fill` and `addlayer` scripts and its naming rules.
+
 ## Reference
 
 - [Photoshop CC Javascript Scripting Reference 2019](https://www.adobe.com/content/dam/acom/en/devnet/photoshop/pdfs/photoshop-cc-javascript-ref-2019.pdf)
