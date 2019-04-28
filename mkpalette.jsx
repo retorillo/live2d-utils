@@ -1,8 +1,10 @@
 #include 'lib.jsx'
 
 var defaultColorName = 'color';
-var polygonRadius = 50;
-var polygonStroke = { red: 10, green: 10, blue: 10 }
+var polygonRadius = 40;
+var fontSize = 3;
+var textColor = { red: 80, green: 80, blue: 80 }
+var polygonStroke = { red: 80, green: 80, blue: 80 }
 var doc = app.activeDocument;
 var al = doc.activeLayer;
 var qid;
@@ -446,9 +448,9 @@ function addText(string) {
   var idstyleSheetHasParent = stringIDToTypeID( "styleSheetHasParent" );
   desc1087.putBoolean( idstyleSheetHasParent, true );
   var idfontPostScriptName = stringIDToTypeID( "fontPostScriptName" );
-  desc1087.putString( idfontPostScriptName, """Consolas""" );
+  desc1087.putString( idfontPostScriptName, """Arial""" );
   var idFntN = charIDToTypeID( "FntN" );
-  desc1087.putString( idFntN, """Consolas""" );
+  desc1087.putString( idFntN, """Arial""" );
   var idFntS = charIDToTypeID( "FntS" );
   desc1087.putString( idFntS, """R""" );
   var idScrp = charIDToTypeID( "Scrp" );
@@ -459,10 +461,10 @@ function addText(string) {
   desc1087.putBoolean( idfontAvailable, true );
   var idSz = charIDToTypeID( "Sz  " );
   var idPnt = charIDToTypeID( "#Pnt" );
-  desc1087.putUnitDouble( idSz, idPnt, 8 );
+  desc1087.putUnitDouble( idSz, idPnt, fontSize );
   var idimpliedFontSize = stringIDToTypeID( "impliedFontSize" );
   var idPnt = charIDToTypeID( "#Pnt" );
-  desc1087.putUnitDouble( idimpliedFontSize, idPnt, 8 );
+  desc1087.putUnitDouble( idimpliedFontSize, idPnt, fontSize );
   var idHrzS = charIDToTypeID( "HrzS" );
   desc1087.putDouble( idHrzS, 100.000000 );
   var idVrtS = charIDToTypeID( "VrtS" );
@@ -573,11 +575,11 @@ function addText(string) {
   var idClr = charIDToTypeID( "Clr " );
   var desc1088 = new ActionDescriptor();
   var idRd = charIDToTypeID( "Rd  " );
-  desc1088.putDouble( idRd, 50 );
+  desc1088.putDouble( idRd, textColor.red );
   var idGrn = charIDToTypeID( "Grn " );
-  desc1088.putDouble( idGrn, 50 );
+  desc1088.putDouble( idGrn, textColor.green );
   var idBl = charIDToTypeID( "Bl  " );
-  desc1088.putDouble( idBl, 50 );
+  desc1088.putDouble( idBl, textColor.blue );
   var idRGBC = charIDToTypeID( "RGBC" );
   desc1087.putObject( idClr, idRGBC, desc1088 );
   var idstrokeColor = stringIDToTypeID( "strokeColor" );
@@ -593,9 +595,9 @@ function addText(string) {
   var idbaseParentStyle = stringIDToTypeID( "baseParentStyle" );
   var desc1090 = new ActionDescriptor();
   var idfontPostScriptName = stringIDToTypeID( "fontPostScriptName" );
-  desc1090.putString( idfontPostScriptName, """Consolas""" );
+  desc1090.putString( idfontPostScriptName, """Arial""" );
   var idFntN = charIDToTypeID( "FntN" );
-  desc1090.putString( idFntN, """Consolas""" );
+  desc1090.putString( idFntN, """Arial""" );
   var idFntS = charIDToTypeID( "FntS" );
   desc1090.putString( idFntS, """R""" );
   var idScrp = charIDToTypeID( "Scrp" );
@@ -606,10 +608,10 @@ function addText(string) {
   desc1090.putBoolean( idfontAvailable, true );
   var idSz = charIDToTypeID( "Sz  " );
   var idPnt = charIDToTypeID( "#Pnt" );
-  desc1090.putUnitDouble( idSz, idPnt, 8.000000 );
+  desc1090.putUnitDouble( idSz, idPnt, fontSize );
   var idimpliedFontSize = stringIDToTypeID( "impliedFontSize" );
   var idPnt = charIDToTypeID( "#Pnt" );
-  desc1090.putUnitDouble( idimpliedFontSize, idPnt, 8.000000 );
+  desc1090.putUnitDouble( idimpliedFontSize, idPnt, fontSize );
   var idHrzS = charIDToTypeID( "HrzS" );
   desc1090.putDouble( idHrzS, 100.000000 );
   var idVrtS = charIDToTypeID( "VrtS" );
