@@ -71,6 +71,11 @@ foo-*              => foo
 - Horizontal mirroring copy from current active layer to other layers that has same mirror ID.
 - For example: select `leftSholder #mirror(sholder)` layer set, then load this script, all layer sets that has ID `mirror(sholder)` will be affected.
 
+## fillall.jsx
+  
+- Same with `fill.jsx`, but this script can parse `# palette` layer set and instantiate accessable palette on memory, then, fill all its sibling layers and its children by using palette color.
+- Powerful tool to free you from boring work, but this operation requires huge computing time. Take a cofee.
+
 ## fill.jsx
   
 - Fill by current selected color by finding same `fill(id)` layers on entire document.
@@ -96,6 +101,16 @@ foo-*              => foo
 ## selectonly.jsx
 
 - Remove all deselected layers and layer sets from current document.
+
+## level
+
+- `level` can apply "Levels (Ctrl + L)" to current active layer or layer set (including children).
+- Active selected layer or layer set must be has `level(I1, I2, I3, O1, O2)` instruction. Each parameters are correspond with "Levels" window, for example, `#level(0, 1.00, 255, 0, 255)`.
+
+## exposure
+
+- `exposure` can apply "Exposure (Image &gt; Adjustment &gt; Exposure)" to current active layer or layer set (including children).
+- Active selected layer or layer set must be has `exposure(E, O, G)` instruction. Each value are correspond with "Levels" window, for example, `#exposure(0.00, 0.0000, 1.00)`.
 
 ## addlayer
 
