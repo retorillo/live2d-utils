@@ -269,6 +269,7 @@ function makePolygonInNLS(nls) {
   if (!nls.artLayers || !nls.artLayers.length) {
     var dw = doc.width;
     var dh = doc.height;
+    doc.activeLayer = nls.parent;
     addText(nls.name);
     var text = doc.activeLayer;
     text.x = 0;
@@ -853,15 +854,15 @@ function addText(string) {
 function bootstrap() {
   qid = queryFillID(al);
   if (!qid) qid = defaultColorName;
+  doc.suspendHistory('New Palette (' + qid + ')', 'exec()');
+}
+function exec() {
   var pls = findPaletteLayerSet(al);
   if (!pls) {
     pls = doc.layerSets.add();
     pls.name = '# palette';
   }
   nls = findNearestLayerSet(pls, qid);
-  doc.suspendHistory('New Palette (' + qid + ')', 'exec()');
-}
-function exec() {
   var pal = findPalette(nls, qid);
   if (pal) {
     doc.activeLayer = pal;
