@@ -6,11 +6,15 @@ function freeze(list) {
   freezed.__freezed = true;
   return freezed;  
 }
-function map(list, mapper) {
+function map(list, mapper, nonfreeze) {
+  var purger = {};
   var mapped = [];
-  var f = freeze(list);
-  for (var c = 0; c < f.length; c++)
-    mapped.push(mapper(f[c]));
+  var f = nonfreeze ? list : freeze(list);
+  for (var c = 0, r; c < f.length; c++) {
+    r = mapper(f[c], purger);
+    if (r === purger) continue;
+    mapped.push(r);
+  }
   return mapped;
 }
 function union(list1, list2) {
@@ -159,11 +163,42 @@ function setLayerColor(l, color) {
   app.activeDocument = ad;
   ad.activeLayer = al;
 }
+function selectLayerMask() {
+  var idslct = charIDToTypeID( "slct" );
+  var desc = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idChnl = charIDToTypeID( "Chnl" );
+  var idChnl = charIDToTypeID( "Chnl" );
+  var idMsk = charIDToTypeID( "Msk " );
+  ref.putEnumerated( idChnl, idChnl, idMsk );
+  desc.putReference( idnull, ref );
+  var idMkVs = charIDToTypeID( "MkVs" );
+  desc.putBoolean( idMkVs, false );
+  executeAction( idslct, desc, DialogModes.NO );
+}
+function selectVectorMask() {
+  var idslct = charIDToTypeID( "slct" );
+  var desc = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idPath = charIDToTypeID( "Path" );
+  var idPath = charIDToTypeID( "Path" );
+  var idvectorMask = stringIDToTypeID( "vectorMask" );
+  ref.putEnumerated( idPath, idPath, idvectorMask );
+  var idLyr = charIDToTypeID( "Lyr " );
+  var idOrdn = charIDToTypeID( "Ordn" );
+  var idTrgt = charIDToTypeID( "Trgt" );
+  ref.putEnumerated( idLyr, idOrdn, idTrgt );
+  desc.putReference( idnull, ref );
+  executeAction( idslct, desc, DialogModes.NO );
+}
 function deleteLayerMask(l) {
   var ad = app.activeDocument;
   var al = ad.activeLayer;
   var doc = app.activeDocument = getDocument(l);
   doc.activeLayer = l;
+  selectLayerMask();
   var idDlt = charIDToTypeID( "Dlt " );
   var desc = new ActionDescriptor();
   var idnull = charIDToTypeID( "null" );
@@ -181,6 +216,8 @@ function deleteVectorMask(l) {
   var ad = app.activeDocument;
   var al = ad.activeLayer;
   var doc = app.activeDocument = getDocument(l);
+  doc.activeLayer = l;
+  selectVectorMask();
   var idDlt = charIDToTypeID( "Dlt " );
   var desc = new ActionDescriptor();
   var idnull = charIDToTypeID( "null" );
@@ -208,6 +245,8 @@ function applyLayerMask(l) {
   var ad = app.activeDocument;
   var al = ad.activeLayer;
   var doc = app.activeDocument = getDocument(l);
+  doc.activeLayer = l;
+  selectLayerMask();
   var idDlt = charIDToTypeID( "Dlt " );
   var desc = new ActionDescriptor();
   var idnull = charIDToTypeID( "null" );
@@ -227,6 +266,8 @@ function rasterizeVectorMask(l) {
   var ad = app.activeDocument;
   var al = ad.activeLayer;
   var doc = app.activeDocument = getDocument(l);
+  doc.activeLayer = l;
+  selectVectorMask();
   var idrasterizeLayer = stringIDToTypeID( "rasterizeLayer" );
   var desc = new ActionDescriptor();
   var idnull = charIDToTypeID( "null" );
@@ -269,4 +310,24 @@ function merge(l) {
   try { rasterizeVectorMask(l); } catch (e) {}
   try { applyLayerMask(l); } catch (e) {}
   return l;
+}
+function parseInstructions(name) {
+  var names = name.split(/#/g);
+  var instrs = [];
+  var r = /^\s*([a-z][a-z0-9]+)\s*\(([^)]+)\)/i
+  for (var c = 1; c < names.length; c++) {
+    var i = names[c];
+    var m = r.exec(i);
+    if (!m) continue;
+    var I = { };
+    I.name = m[1];
+    I.arguments = map(m[2].split(/,/g), function(a) {
+      var b = a.replace(/^\s+|\s+$/g, '');
+      var c = parseFloat(b);
+      return c !== c ? b : c;
+    });
+    instrs.push(I);
+    instrs[I.name] = I.arguments;
+  }
+  return instrs;
 }
