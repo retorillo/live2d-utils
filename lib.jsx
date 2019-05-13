@@ -375,7 +375,7 @@ function deleteComp(id) {
 }
 function buildName(name, prefix, suffix) {
   var b1 = [], b2 = [];
-  var m = /^\s*([^#\s]+)(.*)$/.exec(name);
+  var m = /^\s*([^#\s]+)(?:[^#]*)(.*)$/.exec(name);
   if (prefix && prefix.length > 0) b1.push(prefix);
   // NOTE: Cubism may fail to load if layer has contains dot (?)
   b1.push(m[1].replace(/\./g, '-'));
