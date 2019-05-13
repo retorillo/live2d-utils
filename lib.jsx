@@ -373,14 +373,15 @@ function deleteComp(id) {
   desc.putReference( idnull, ref );
   executeAction( idDlt, desc, DialogModes.NO );
 }
-function buildName(name, prefix, suffix) {
+function buildName(name, prefix, suffix, joint) {
+  joint = joint ? joint : '-';
   var b1 = [], b2 = [];
   var m = /^\s*([^#\s]+)(?:[^#]*)(.*)$/.exec(name);
   if (prefix && prefix.length > 0) b1.push(prefix);
   // NOTE: Cubism may fail to load if layer has contains dot (?)
-  b1.push(m[1].replace(/\./g, '-'));
+  b1.push(m[1].replace(/\./g, joint));
   if (suffix && suffix.length > 0) b1.push(suffix);
-  b2.push(b1.join('-'));
+  b2.push(b1.join(joint));
   if (m[2].length > 0) b2.push(m[2]);
   return b2.join(' ');
 }
