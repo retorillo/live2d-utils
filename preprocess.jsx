@@ -5,47 +5,6 @@ var sets = {};
 var doc = app.activeDocument;
 doc.suspendHistory('Live2D Preprocess', 'exec()');
 
-function buildName(name, prefix, suffix) {
-  var b1 = [], b2 = [];
-  var m = /^\s*([^#\s]+)(.*)$/.exec(name);
-  if (prefix && prefix.length > 0) b1.push(prefix);
-  // NOTE: Cubism may fail to load if layer has contains dot (?)
-  b1.push(m[1].replace(/\./g, '-'));
-  if (suffix && suffix.length > 0) b1.push(suffix);
-  b2.push(b1.join('-'));
-  if (m[2].length > 0) b2.push(m[2]);
-  return b2.join(' ');
-}
-function splitLayerToLR(l) {
-  var c;
-  var h = unitToNr(doc.height);
-  var w = unitToNr(doc.width);
-  var instr = parseInstructions(l.name);
-  var sorg = instr['splitorigin'];
-  var lname = instr['lname'];
-  lname = lname && lname.length == 1 && lname[0].length > 0 ? lname[0] : null;
-  var rname = instr['rname'];
-  rname = rname && rname.length == 1 && rname[0].length > 0 ? rname[0] : null;
-  if (sorg && sorg.length == 1 && typeof(sorg[0]) === 'number' && sorg[0] > 0 && sorg[0] < w)
-    c = sorg[0]
-  else
-    c = unitToNr(doc.width) / 2;
-  var leftRegion = [[0, 0], [c, 0], [c, h], [0, h], [0, 0]];
-  var rightRegion = [[c, 0], [w, 0], [w, h], [c, h], [c, 0]];
-  var leftLayer = l;
-  var rightLayer = l.duplicate(l, ElementPlacement.PLACEAFTER);
-  // NOTE: left parts exists at right region, rightp parts is left respectively.
-  rightLayer.name = buildName(leftLayer.name, null, lname ? lname : 'L');
-  leftLayer.name = buildName(leftLayer.name, null, rname ? rname : 'R');
-  doc.activeLayer = leftLayer;
-  doc.selection.select(rightRegion);
-  doc.selection.clear();
-  doc.activeLayer = rightLayer;
-  doc.selection.select(leftRegion);
-  doc.selection.clear();
-  doc.selection.deselect();
-  return [leftLayer, rightLayer];
-}
 function processLayers(layers, prefix) {
   var groups = [];
   var abandon = function(l) {
