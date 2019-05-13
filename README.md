@@ -32,7 +32,8 @@ If name of layer set starting with `-`, and it had not been merged, their childr
 
 If name of layer or layer set starting with `:`, it will be split to left and right layers. (eg. eye-l, eye-r)
 
-NOTE: This feature will produce expected result only if each left and right contents placed at symmetrical position on its layer or merged layer set.
+- Specify horizontal location in pixel by using `#splitorigin(pixel)` to split at non-center line, otherwise, this script split at canvas center.
+- Specify suffix by using `#lname(L)` and `#rname(R)`
 
 #### Suppressing layer/vector masks `!`
 
@@ -116,9 +117,25 @@ foo-*              => foo
 
 - `addlayer` is set of scripts to create new layer on my naming rule with `fill(FILLID)` instruction.
 
+## isolate.jsx
+
+- Same behavior with Blender isolate command. Hide all layers excepting current active layers and layer that starting with `#`.
+  - After this script, you can see `PRE_ISOLATION` and `POST_ISOLATION` in "Layer Comps" window. Use them to switch previous visibility states.
+
 ## mkpalette.jsx
 
 - Powerful script to generate color palette. Should use by combining with `fill` and `addlayer` scripts and its naming rules.
+
+## split.jsx
+
+- Same with `:` split operation of `preprocess.jsx`.
+  - Of course, `#lname(L)` `#rname(R)` `#splitorigin(x)` are avaible.
+
+## autonr.jsx
+
+- Execute auto numbering to current active layer set children.
+  - Specify `#autonr(prefix=foobar)` to layer set, in order to put prefix before incremental number.
+  - Specify `#autonr(skip)` to each of children, in order to prevent rename it.
 
 ## Reference
 
