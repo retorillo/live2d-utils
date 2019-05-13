@@ -25,7 +25,16 @@ function handleLayers(layers, active){
       l.visible = false;
   });
 }
+function updateCompSafe(id){
+  try {
+    updateComp(id);
+  }
+  catch (e) {
+    addComp(id);
+  }
+}
 function exec() {
+  updateCompSafe('PRE_ISOLATION');
   var l = doc.activeLayer;
   for (var c = 0; c < 256; c++) {
     activeTree.push(l);
@@ -34,6 +43,5 @@ function exec() {
     l = l.parent;
   }
   handleLayers(doc.layers, false);
+  updateCompSafe('POST_ISOLATION');
 }
-
-

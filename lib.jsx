@@ -331,3 +331,45 @@ function parseInstructions(name) {
   }
   return instrs;
 }
+function addComp(id) {
+  var idMk = charIDToTypeID( "Mk  " );
+  var descA = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idcompsClass = stringIDToTypeID( "compsClass" );
+  ref.putClass( idcompsClass );
+  descA.putReference( idnull, ref );
+  var idUsng = charIDToTypeID( "Usng" );
+  var descB = new ActionDescriptor();
+  var iduseVisibility = stringIDToTypeID( "useVisibility" );
+  descB.putBoolean( iduseVisibility, true );
+  var idusePosition = stringIDToTypeID( "usePosition" );
+  descB.putBoolean( idusePosition, true );
+  var iduseAppearance = stringIDToTypeID( "useAppearance" );
+  descB.putBoolean( iduseAppearance, false );
+  var idTtl = charIDToTypeID( "Ttl " );
+  descB.putString( idTtl, id );
+  var idcompsClass = stringIDToTypeID( "compsClass" );
+  descA.putObject( idUsng, idcompsClass, descB );
+  executeAction( idMk, descA, DialogModes.NO );
+}
+function applyComp(id) {
+  var idapplyComp = stringIDToTypeID( "applyComp" );
+  var desc = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idcompsClass = stringIDToTypeID( "compsClass" );
+  ref.putName( idcompsClass, id );
+  desc.putReference( idnull, ref );
+  executeAction( idapplyComp, desc, DialogModes.NO );
+}
+function deleteComp(id) {
+  var idDlt = charIDToTypeID( "Dlt " );
+  var desc = new ActionDescriptor();
+  var idnull = charIDToTypeID( "null" );
+  var ref = new ActionReference();
+  var idcompsClass = stringIDToTypeID( "compsClass" );
+  ref.putName( idcompsClass, id );
+  desc.putReference( idnull, ref );
+  executeAction( idDlt, desc, DialogModes.NO );
+}

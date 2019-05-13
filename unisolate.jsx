@@ -15,6 +15,12 @@ function handleLayers(layers) {
   });
 }
 function exec() {
+  try {
+    applyComp('PRE_ISOLATION'); 
+    return;
+  }
+  catch(e) {
+  }
   handleLayers(doc.layers);
 }
 
