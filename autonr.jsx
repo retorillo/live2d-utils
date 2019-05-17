@@ -11,10 +11,13 @@ function exec() {
   var globalInstr = parseInstructions(doc.activeLayer.name);
   globalInstr = globalInstr && globalInstr['autonr'] ? globalInstr['autonr'] : '';
   
-  prefix = /\bprefix\s*=\s*([^\b]+)/.exec(globalInstr);
+  prefix = /\bprefix\s*=\s*([^\s]+)/.exec(globalInstr);
   prefix = prefix ? prefix[1] : '';
+  
+  shift = /\bshift\s*=\s*([0-9]+)/.exec(globalInstr);
+  shift = shift ? parseInt(shift[1]) : 0;
  
-  var count=0;
+  var count= 0 + shift;
   map( map(doc.activeLayer.layers, function(l) {
     var instr = parseInstructions(l.name);
     if (instr && instr['autonr'] && /\bskip\b/.test(instr['autonr']))
