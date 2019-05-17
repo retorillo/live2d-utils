@@ -39,8 +39,17 @@ function exec() {
     return;
   }
   var l = al.parent.artLayers.add();
-  l.name = TYPE + ' #fill(' + (COLOR ? [id, COLOR].join('-') : id) + ')';
+  var nid = COLOR ? [id, COLOR].join('-') : id;
+  l.name = TYPE + ' #fill(' + nid + ')';
   l.move(gr.ref, ElementPlacement.PLACEBEFORE);
   if (!l.grouped) l.grouped = true;
   doc.activeLayer = l;
+  try {
+    var pal = parsePaletteLayerSet();
+    if (pal[nid])
+      app.foregroundColor = pal[nid];
+  }
+  catch (e) {
+    alert('"' + nid + '" is not found or something wrong: ' + e);
+  }
 }

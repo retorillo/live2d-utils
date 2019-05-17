@@ -47,5 +47,3 @@ function exec() {
   l.move(set, ElementPlacement.INSIDE);
   al.move(set, ElementPlacement.INSIDE);
 }
-
-

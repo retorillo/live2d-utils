@@ -1,3 +1,4 @@
+var PALETTE_LAYER_SET_NAME = /^#\s*palette$/;
 function freeze(list) {
   if (list instanceof Array && list.__freezed) return list;
   var freezed = [];
@@ -414,4 +415,41 @@ function splitLayerToLR(l) {
   doc.selection.clear();
   doc.selection.deselect();
   return [leftLayer, rightLayer];
+}
+function parsePaletteLayerSet(pls) {
+  if (!pls) {
+    pls = findPaletteLayerSet(doc.activeLayer);
+    if (!pls)
+      throw "#palette is not found";
+  }
+  var pal = {};
+  doc.colorSamplers.removeAll(); // NOTE: sampler is up to 10
+  var ls = pls.layerSets;
+  for (var c = 0; c < ls.length; c++) {
+    var s = ls[c];
+    var sls = s.artLayers;
+    for (var d = 0; d < sls.length; d++) {
+      var l = sls[d];
+      var instr = parseInstructions(l.name);
+      if (!instr || !instr['fill']) continue;
+      var fid = instr['fill'];
+      if (pal[fid]) throw fid + ' is duplicated';
+      var x = (l.bounds[2] - l.bounds[0]) / 2 + l.bounds[0];
+      var y = (l.bounds[3] - l.bounds[1]) / 2 + l.bounds[1];
+      var sample = doc.colorSamplers.add([x, y]);
+      pal[fid] = sample.color;
+      sample.remove();
+    }
+  }
+  return pal;
+}
+function findPaletteLayerSet(criteria) {
+  if (!criteria.parent) return;
+  var ls = criteria.parent.layerSets;
+  if (!ls) return;
+  for (var c = 0; c < ls.length; c++) {
+    if (PALETTE_LAYER_SET_NAME.test(ls[c].name))
+      return ls[c];
+  }
+  return findPaletteLayerSet(criteria.parent); 
 }
