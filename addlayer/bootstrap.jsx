@@ -46,7 +46,7 @@ function exec() {
   doc.activeLayer = l;
   try {
     var criteria = id.split('-')[0];
-    var pal = parsePaletteLayerSet(undefined, function(l) { l.name == criteria });
+    var pal = parsePaletteLayerSet(null, function(l) { return l.name == criteria });
     if (pal[nid])
       app.foregroundColor = pal[nid];
     else
