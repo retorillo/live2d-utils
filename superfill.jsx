@@ -26,19 +26,27 @@ function exec() {
     alert("Select art layer and reload this script");
   }
   var al = doc.activeLayer;
+  var instr = parseInstructions(al.name);
   var l = al.parent.artLayers.add();
+  var fname;
+  if (instr && instr['fill'] && /-line/.test(instr['fill'][0]))
+    fname = /(\w+)-line/.exec(instr['fill'][0])[1];
+
+  var fillcolor = app.foregroundColor;
+  var pls = parsePaletteLayerSet(null, function(l) { return l.name == fname });
+  if (pls && pls[fname])
+    fillcolor = pls[fname];
+
   doc.activeLayer = l;
-  doc.selection.fill(app.foregroundColor);
+  doc.selection.fill(fillcolor);
   doc.activeLayer = al;
   selectPixel();
   doc.activeLayer = l;
-  doc.selection.fill(app.foregroundColor);
+  doc.selection.fill(fillcolor);
   doc.selection.deselect();
-  var instr = parseInstructions(al.name);
-  var fname;
-  if (instr && instr['fill'] && /-line/.test(instr['fill']))
-    fname = /(\w+)-line/.exec(instr['fill'])[1];
-  l.name = fname ? fname + ' #fill(' + fname + ')' : al.fname;
+
+
+  l.name = fname ? fname + ' #fill(' + fname + ')' : al.name;
   l.move(al, ElementPlacement.PLACEAFTER);
 
   var set = al.parent.layerSets.add();
