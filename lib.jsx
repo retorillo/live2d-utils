@@ -375,7 +375,7 @@ function deleteComp(id) {
   executeAction( idDlt, desc, DialogModes.NO );
 }
 function buildName(name, prefix, suffix, joint) {
-  joint = joint ? joint : '-';
+  joint = typeof joint === 'string' ? joint : '-';
   var b1 = [], b2 = [];
   var m = /^\s*([^#\s]+)(?:[^#]*)(.*)$/.exec(name);
   if (prefix && prefix.length > 0) b1.push(prefix);
