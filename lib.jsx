@@ -416,7 +416,7 @@ function splitLayerToLR(l) {
   doc.selection.deselect();
   return [leftLayer, rightLayer];
 }
-function parsePaletteLayerSet(pls) {
+function parsePaletteLayerSet(pls, filter) {
   if (!pls) {
     pls = findPaletteLayerSet(doc.activeLayer);
     if (!pls)
@@ -427,6 +427,7 @@ function parsePaletteLayerSet(pls) {
   var ls = pls.layerSets;
   for (var c = 0; c < ls.length; c++) {
     var s = ls[c];
+    if (filter && !filter(s)) continue;
     var sls = s.artLayers;
     for (var d = 0; d < sls.length; d++) {
       var l = sls[d];

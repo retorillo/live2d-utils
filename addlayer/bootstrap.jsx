@@ -45,9 +45,12 @@ function exec() {
   if (!l.grouped) l.grouped = true;
   doc.activeLayer = l;
   try {
-    var pal = parsePaletteLayerSet();
+    var criteria = id.split('-')[0];
+    var pal = parsePaletteLayerSet(undefined, function(l) { l.name == criteria });
     if (pal[nid])
       app.foregroundColor = pal[nid];
+    else
+      alert('color "' + nid + '" is not defined');
   }
   catch (e) {
     alert('"' + nid + '" is not found or something wrong: ' + e);
