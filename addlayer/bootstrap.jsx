@@ -1,4 +1,5 @@
 #include '../lib.jsx'
+var undefined = ({}).polyfill; 
 var doc;
 var TYPE;
 var COLOR;
@@ -23,47 +24,75 @@ function findGroupedRoot(l) {
     return { root: L, rootIndex: I, ref: l, refIndex: i };
   }
 }
-function parseFillInstruction(name){
+function parseAddLayerInstruction(name){
   var instr = parseInstructions(name);
-  if (!instr || !instr['fill']) return null;
+  if (!instr || !instr['addlayer']) return null;
   var parsed = {};
-  var params = instr['fill'];
-  var id;
+  var params = instr['addlayer'];
   for (var c = 0; c < params.length; c++) {
     var m = /([^=]*)=?([^=]*)/.exec(params[c]);
     if (m[2])
       parsed[m[1]] = m[2];
-    else if (!id)
-      id = params[c];
   }
-  return { id: id, base: parsed['base'] };
+  return parsed;
+}
+function fetchAddLayerInstruction(l) {
+  var I = {};
+  var L = l;
+  do {
+    var i = parseAddLayerInstruction(L.name);
+    if (!i) continue;
+    if (i.base !== undefined && I.base === undefined)
+      I.base = i.base;
+    if (i.grouped !== undefined && I.grouped === undefined)
+      I.grouped = i.grouped == "true" ? true : false;
+  } while (L = L.parent);
+  if (I.grouped === undefined) I.grouped = true;
+  return I;
+}
+function fetchFillID(l) {
+  var instr = parseInstructions(name);
+  if (!instr || !instr['fill']) return null;
+  return instr['fill']; 
 }
 function exec() {
   var al = doc.activeLayer;
-  var gr = findGroupedRoot(al);
-  var instr = parseFillInstruction(gr.root.name);
-  if (!instr || !instr.id) {
-    instr = parseFillInstruction(gr.root.parent.name);
-    if (!instr || !instr.base) {
-      alert('#fill instruction does not found');
+  var instr = fetchAddLayerInstruction(al);
+  var id;
+  var place;
+
+  if (instr.grouped) {
+    var gr = findGroupedRoot(al);
+    id = fetchFillID(gr.root);
+    place = gr.ref;
+  }
+  else {
+    id = null;
+    place = al; 
+  }
+  
+  if (!id) {
+    if (!instr.base) {
+      alert('#fill or #addlayer instruction not found');
       return;
     }
-    instr = { id: instr.base, base: instr.base };
+    id = instr.base;
   }
+
   var l = al.parent.artLayers.add();
   var nid;
   
-  if (instr.id.length > COLOR.length && instr.id.substr(instr.id.length - COLOR.length) == COLOR)
-    nid = instr.id;
+  if (id.length > COLOR.length && id.substr(id.length - COLOR.length) == COLOR)
+    nid = id;
   else
-    nid = [instr.id, COLOR].join('-');
+    nid = [id, COLOR].join('-');
 
   l.name = TYPE + ' #fill(' + nid + ')';
-  l.move(gr.ref, ElementPlacement.PLACEBEFORE);
-  if (!l.grouped) l.grouped = true;
+  l.move(place, ElementPlacement.PLACEBEFORE);
+  if (instr.grouped && !l.grouped) l.grouped = true;
   doc.activeLayer = l;
   try {
-    var criteria = instr.base ? instr.base : instr.id.split('-')[0];
+    var criteria = instr.base ? instr.base : id.split('-')[0];
     var pal = parsePaletteLayerSet(null, function(l) { return l.name == criteria });
     if (pal[nid])
       app.foregroundColor = pal[nid];
