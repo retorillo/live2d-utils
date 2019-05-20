@@ -23,29 +23,47 @@ function findGroupedRoot(l) {
     return { root: L, rootIndex: I, ref: l, refIndex: i };
   }
 }
-function queryFillID(l){
-  var m = /#(.+)$/.exec(l.name);
-  if (!m) return;
-  m = /fill\(([^)]+)\)/.exec(m[1]);
-  if (!m) return; 
-  return m[1];
+function parseFillInstruction(name){
+  var instr = parseInstructions(name);
+  if (!instr || !instr['fill']) return null;
+  var parsed = {};
+  var params = instr['fill'];
+  var id;
+  for (var c = 0; c < params.length; c++) {
+    var m = /([^=]*)=?([^=]*)/.exec(params[c]);
+    if (m[2])
+      parsed[m[1]] = m[2];
+    else if (!id)
+      id = params[c];
+  }
+  return { id: id, base: parsed['base'] };
 }
 function exec() {
   var al = doc.activeLayer;
   var gr = findGroupedRoot(al);
-  var id = queryFillID(gr.root);
-  if (!id) {
-    alert('fill ID not found');
-    return;
+  var instr = parseFillInstruction(gr.root.name);
+  if (!instr || !instr.id) {
+    instr = parseFillInstruction(gr.root.parent.name);
+    if (!instr || !instr.base) {
+      alert('#fill instruction does not found');
+      return;
+    }
+    instr = { id: instr.base, base: instr.base };
   }
   var l = al.parent.artLayers.add();
-  var nid = COLOR ? [id, COLOR].join('-') : id;
+  var nid;
+  
+  if (instr.id.length > COLOR.length && instr.id.substr(instr.id.length - COLOR.length) == COLOR)
+    nid = instr.id;
+  else
+    nid = [instr.id, COLOR].join('-');
+
   l.name = TYPE + ' #fill(' + nid + ')';
   l.move(gr.ref, ElementPlacement.PLACEBEFORE);
   if (!l.grouped) l.grouped = true;
   doc.activeLayer = l;
   try {
-    var criteria = id.split('-')[0];
+    var criteria = instr.base ? instr.base : instr.id.split('-')[0];
     var pal = parsePaletteLayerSet(null, function(l) { return l.name == criteria });
     if (pal[nid])
       app.foregroundColor = pal[nid];
