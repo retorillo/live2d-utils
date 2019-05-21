@@ -5,7 +5,7 @@ var TYPE;
 var COLOR;
 function bootstrap(type, color) {
   TYPE = type;
-  COLOR = color;
+  COLOR = !color ? '' : color;
   doc = app.activeDocument;
   doc.suspendHistory('Create Layer (' + [TYPE, COLOR].join(', ') + ')', 'exec()');
 }
@@ -50,10 +50,10 @@ function fetchAddLayerInstruction(l) {
   if (I.grouped === undefined) I.grouped = true;
   return I;
 }
-function fetchFillID(l) {
+function fetchFillID(name) {
   var instr = parseInstructions(name);
   if (!instr || !instr['fill']) return null;
-  return instr['fill']; 
+  return instr['fill'][0];
 }
 function exec() {
   var al = doc.activeLayer;
@@ -63,7 +63,7 @@ function exec() {
 
   if (instr.grouped) {
     var gr = findGroupedRoot(al);
-    id = fetchFillID(gr.root);
+    id = fetchFillID(gr.root.name);
     place = gr.ref;
   }
   else {
