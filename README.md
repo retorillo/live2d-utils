@@ -116,8 +116,9 @@ foo-*              => foo
 ## addlayer
 
 - `addlayer` is set of scripts to create new layer on my naming rule with `#fill(FILLID)` instruction.
-  - `#fill(FILLID, base=BASEID)` allows to specify base ID for future `addlayer` operation.
-  - If parent layer set has `#fill(base=BASEID)`, `addlayer` uses this for base of new layer fill ID.
+  - If parent layer set has `#addlayer(base=BASEID)`, `addlayer` uses this for base of new layer fill ID.
+  - If parent layer set has `#addlayer(grouped=true|false)`, `addlayer` change grouping behavior for new layer.
+  - Use the following comma separated syntax to specify both options: `#addlayer(base=BASEID, grouped=true|false)
 
 ## isolate.jsx
 
