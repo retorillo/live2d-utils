@@ -390,12 +390,25 @@ function splitLayerToLR(l) {
   var c;
   var h = unitToNr(doc.height);
   var w = unitToNr(doc.width);
-  var instr = parseInstructions(l.name);
-  var sorg = instr['splitorigin'];
-  var lname = instr['lname'];
-  lname = lname && lname.length == 1 && lname[0].length > 0 ? lname[0] : null;
-  var rname = instr['rname'];
-  rname = rname && rname.length == 1 && rname[0].length > 0 ? rname[0] : null;
+  if (Math.floor(w) !== w)
+    throw new Error('Set Photoshop Unit to Pixel');
+  var instr, sorg, lname, rname;
+  var P = l; 
+  do {
+    var instr = parseInstructions(P.name);
+    if (sorg === undefined) {
+      sorg = instr['splitorigin'];
+    }
+    if (lname === undefined) {
+      lname = instr['lname'];
+      lname = lname && lname.length == 1 && lname[0].length > 0 ? lname[0] : null;
+    }
+    if (rname == undefined) {
+      rname = instr['rname'];
+      rname = rname && rname.length == 1 && rname[0].length > 0 ? rname[0] : null;
+    }
+  } while(P = P.parent);
+
   if (sorg && sorg.length == 1 && typeof(sorg[0]) === 'number' && sorg[0] > 0 && sorg[0] < w)
     c = sorg[0]
   else
