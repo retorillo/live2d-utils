@@ -1,4 +1,6 @@
 var PALETTE_LAYER_SET_NAME = /^#\s*palette$/;
+var DEFAULT_JOINT = '_';
+
 function freeze(list) {
   if (list instanceof Array && list.__freezed) return list;
   var freezed = [];
@@ -375,7 +377,7 @@ function deleteComp(id) {
   executeAction( idDlt, desc, DialogModes.NO );
 }
 function buildName(name, prefix, suffix, joint) {
-  joint = typeof joint === 'string' ? joint : '-';
+  joint = typeof joint === 'string' ? joint : DEFAULT_JOINT;
   var b1 = [], b2 = [];
   var m = /^\s*([^#\s]+)(?:[^#]*)(.*)$/.exec(name);
   if (prefix && prefix.length > 0) b1.push(prefix);
