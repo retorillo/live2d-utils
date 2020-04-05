@@ -28,8 +28,11 @@ function exec() {
   dummy.name = '(dummy)';
   al.move(dummy, ElementPlacement.PLACEBEFORE);
   map(doc.layers, function(l) {
-    if (al != l)
+    if (al != l) {
+      if (l.locked)
+        l.locked = false;
       l.remove();
+    }
   });
   var dummy = doc.artLayers.add();
   dummy.name = '(dummy)';
