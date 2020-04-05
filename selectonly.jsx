@@ -29,8 +29,7 @@ function exec() {
   al.move(dummy, ElementPlacement.PLACEBEFORE);
   map(doc.layers, function(l) {
     if (al != l) {
-      if (l.locked)
-        l.locked = false;
+      l.allLocked = false;
       l.remove();
     }
   });
