@@ -424,11 +424,11 @@ function splitLayerToLR(l) {
   leftLayer.name = buildName(leftLayer.name, null, rname ? rname : 'R');
   doc.activeLayer = leftLayer;
   doc.selection.select(rightRegion);
+  doc.selection.clear();
   doc.selection.deselect();
-  // doc.selection.clear();
   doc.activeLayer = rightLayer;
   doc.selection.select(leftRegion);
-  // doc.selection.clear();
+  doc.selection.clear();
   doc.selection.deselect();
   return [leftLayer, rightLayer];
 }
