@@ -73,7 +73,7 @@ function processLayers(layers, prefix) {
         }
         if (!forcer) {
           var prefixer = /^(.+)(-\*)\s*(#.*)?$/.exec(l.name);
-          if (prefixer) l.name = prefixer[1]; 
+          if (prefixer) l.name = prefixer[1];
           var hadLayerSets = l.layerSets.length;
           processLayers(l.layers, prefixer ? buildName(prefixer[1], prefix) : prefix);
           if (l.layers.length == 0) {
@@ -102,34 +102,28 @@ function processLayers(layers, prefix) {
     }
     var merged;
     var name = buildName(l.name, prefix);
-    if (groups.length > 0) {
-      var merger = doc.layerSets.add();
-      merger.name = l.name + ' (merger)'
-      merger.move(l, ElementPlacement.PLACEAFTER);
-      l.move(merger, ElementPlacement.INSIDE);
-      var placer = l;
-      map(groups, function(gl) {
-        if (!gl.visible) {
-          gl.allLocked = false;
-          gl.remove();
-          return;
-        }
-        gl.move(placer, ElementPlacement.PLACEBEFORE);
-        gl.grouped = true;
-        placer = gl;
-      });
-      groups.splice(0, groups.length);
-      merger.name = name;
-      if (!merger.layers.length) {
-        merger.remove();
+    var merger = doc.layerSets.add();
+    merger.name = l.name + ' (merger)'
+    merger.move(l, ElementPlacement.PLACEAFTER);
+    l.move(merger, ElementPlacement.INSIDE);
+    var placer = l;
+    map(groups, function(gl) {
+      if (!gl.visible) {
+        gl.allLocked = false;
+        gl.remove();
         return;
       }
-      merged = merger.merge(); 
+      gl.move(placer, ElementPlacement.PLACEBEFORE);
+      gl.grouped = true;
+      placer = gl;
+    });
+    groups.splice(0, groups.length);
+    merger.name = name;
+    if (!merger.layers.length) {
+      merger.remove();
+      return;
     }
-    else {
-      merged = merge(l);
-      merged.name = name;
-    }
+    merged = merger.merge();
     if (splitter)
       merged = splitLayerToLR(merged);
     else
@@ -155,7 +149,7 @@ function finalizeLayers(layers) {
 function exec() {
   doc = duplicateDocument(doc, '-preprocessed');
   processLayers(doc.layers);
-  finalizeLayers(doc.layers);  
+  finalizeLayers(doc.layers);
   alert(counter + ' layers were successfully outputted.'
      + ' There were no name confliction found.');
 }
