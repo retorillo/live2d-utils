@@ -36,7 +36,7 @@ function exec() {
   var dummy = doc.artLayers.add();
   dummy.name = '(dummy)';
   map(al.layers, function(l) {
-    l.move(dummy, ElementPlacement.PLACEAFTER);
+    l.move(dummy, ElementPlacement.PLACEBEFORE);
   });
   dummy.remove();
   al.remove();
